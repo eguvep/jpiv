@@ -1,0 +1,70 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+createTecplotVolumeZone{
+  // distance between z planes
+  double dz = jpiv.getSettings().thirdCompReconDz;
+  System.out.println( "Interplane distance is: " + dz );
+  // input files
+  String[] inFileNames = jpiv.getListFrame().getSelectedElements();
+  if (inFileNames == null) {
+    System.out.println("No files selected.");
+  } else {
+    // output file
+    String outFileName = jpiv2.FileHandling.stripExtension( inFileNames[0] ) + ".dat";
+    java.io.BufferedWriter outFile = new java.io.BufferedWriter(new java.io.FileWriter( outFileName ));
+    // tecplot header
+    jpiv2.PivData thePivData = new jpiv2.PivData( inFileNames[0] );
+    int[] dimension = thePivData.getDimension();
+    String header =
+      "TITLE=\"volume vector data\"\n" +
+      "VARIABLES=\"x\" \"y\" \"z\" \"ux\" \"uy\" \"uz\" \"u\"\n" +
+      "ZONE I=" + dimension[0] + " J=" + dimension[1] + " K=" + inFileNames.length + " F=POINT\n";
+    outFile.write(header);
+    // output format
+    java.text.DecimalFormat df = (java.text.DecimalFormat) java.text.DecimalFormat.getInstance(Locale.US);
+    df.applyPattern("+0.0000E00;-0.0000E00");
+    // loop over input files
+    for (f=0; f<inFileNames.length; f++) {
+      System.out.println("Append file: " + inFileNames[f]);
+      thePivData = new jpiv2.PivData( inFileNames[f] );
+      double[][] data = thePivData.getPivData();
+      // copy the data into the output file
+      for(int r = 0; r < data.length; ++r) {
+        outFile.write(df.format(data[r][0]) + " " +
+                      df.format(data[r][1]) + " " +
+                      df.format(f*dz) + " " +
+                      df.format(data[r][2]) + " " +
+                      df.format(data[r][3]) + " " +
+                      df.format(data[r][4]) + " " +
+                      df.format( Math.sqrt(
+	                data[r][2]*data[r][2]+
+	                data[r][3]*data[r][3]+
+	                data[r][4]*data[r][4] ) ) + "\n" );
+      }
+    }
+    outFile.flush();
+    outFile.close();
+    System.out.println("Saved volume zone in: " + outFileName);
+  }
+}
+// execute this script in the background
+createTecplotVolumeZone = createTecplotVolumeZone();
+new Thread( createTecplotVolumeZone ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();

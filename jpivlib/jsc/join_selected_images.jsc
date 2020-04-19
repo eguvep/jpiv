@@ -1,0 +1,61 @@
+/**
+* Copyright 2009 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+joinSelectedImages() {
+	
+	// main function
+	private void run() {
+		String[] files = jpiv.getListFrame().getSelectedElements();
+		if ( files == null || files.length < 2) {
+			System.out.println(
+				"Select at least two image files." );
+		} else {
+			for(int f=1; f<files.length; f=f+2) {
+				System.out.println(
+					"Join image " + 
+					files[f-1] + " and " + 
+					files[f]);
+				// read
+				jpiv2.PivImg img = new jpiv2.PivImg( 
+					jpiv, files[f-1], files[f] );
+				// filename
+				String basename = 
+					files[f-1].substring(
+						0, 
+						files[f-1].lastIndexOf('.') );
+				// save
+				img.writePivImageToFile( 
+					"png", 
+					basename + "DblFrm" );
+				// append to list
+				jpiv.getListFrame().appendElement( 
+					basename + "DblFrm.png" );
+			}
+			System.out.println("Finished!");
+		}
+	}
+	
+	return this;
+}
+
+// start batch filter process in background and clean up variables
+joinSelectedImages = joinSelectedImages();
+new Thread( joinSelectedImages ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();
+

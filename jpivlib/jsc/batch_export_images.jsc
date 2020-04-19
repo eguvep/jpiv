@@ -1,0 +1,129 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+batchExport() {
+	
+	// member variables
+	private jpiv2.ScriptDlg myDlg;
+	private jpiv2.Settings settings;
+	private boolean useBackgroundImg;
+	private boolean varyBackgroundImg;
+	private String imgFormat;
+	private java.io.File[] imgFiles = null;
+	private String[] vecFiles;
+	private java.text.DecimalFormat df;
+	
+	// set up graphical user dialog
+	private void initDlg() {
+		myDlg = new jpiv2.ScriptDlg(jpiv,
+			"Batch Export Images",
+			"mail@vennemann-online.de");
+		myDlg.setDate("August 2006");
+		myDlg.setOs("independent");
+		myDlg.setDependencies("none");
+		myDlg.setComment(
+			"Exports all selected image files in a different format.");
+		myDlg.addVariable(
+			"imgFormat",
+			"tiff",
+			"A string that defines the image format (tiff, png, pnm, jpeg, raw ...).");
+	}
+	
+	// show a file chooser dialog for the output filename
+	// return: a filename
+	private String showFileChooser() {
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		myFileChooser.setFiletype(myFileChooser.ALL, false);
+		int approve = myFileChooser.showSaveDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			String pathname = myFileChooser.getSelectedFile().toString();
+			// remove any extension
+			int index = pathname.indexOf('.');
+			if(index != -1) pathname = pathname.substring(0, index);
+			return(pathname);
+		} else {
+			System.out.println("No destination file specified.");
+			return(null);
+		}
+	}
+	
+	// initialize variables
+	private void initVariables() {
+		settings = jpiv.getSettings();
+		imgFormat = myDlg.getAsString("imgFormat");
+		useBackgroundImg = settings.vectorBackgroundImage;
+		vecFiles= jpiv.getListFrame().getSelectedElements();
+		df =  jpiv2.FileHandling.getCounterFormat(vecFiles.length);
+		if(useBackgroundImg) {
+			imgDirString = settings.vectorBackgroundImagePath;
+			java.util.Properties sysProp = System.getProperties();
+			String sep = sysProp.getProperty("file.separator");
+			imgDirString = imgDirString.substring(0, imgDirString.lastIndexOf(sep));
+			java.io.File imgDir = new java.io.File(imgDirString);
+			imgFiles = imgDir.listFiles();
+			java.util.Arrays.sort(imgFiles);
+			for(int i=0; i<imgFiles.length; i++) {
+				System.out.println(imgFiles[i]);
+			}
+		}
+	}
+	
+	// exports a single image file in a different format
+	// sourcePath: the image file to export
+	// destPath: the filename for the new image
+	private void export(String format, String sourcePath, String destPath) {
+		jpiv2.PivImg pivimg = new jpiv2.PivImg(jpiv, sourcePath);
+		pivimg.writePivImageToFile(format, destPath);
+	}
+	
+	// call this method to start the batch export process
+	public void run() {
+		initDlg();		
+			int proceed = myDlg.display();
+			if (proceed == myDlg.EXECUTE_OPTION) {
+			initVariables();
+			String destPath = showFileChooser();
+			if (destPath != null) {
+				if ( vecFiles == null) {
+					System.out.println("Select at least one image file.");
+				} else {
+					System.out.println("Start batch export.");
+					for(int f=0; f<vecFiles.length; f++) {
+						if (varyBackgroundImg && useBackgroundImg) {
+							settings.setVectorBackgroundImagePath(imgFiles[f].toString());
+						}
+						System.out.println("create: " + destPath + df.format(f) + "." +imgFormat);
+						export(imgFormat, vecFiles[f], destPath + df.format(f) + "." + imgFormat);
+					}
+					System.out.println("Finished batch export.");
+				}
+			}
+			else {
+				System.out.println("cancelled.");
+			}
+		}
+	}
+	return(this);
+}
+
+// start batch export process in background and free memory
+batchExport = batchExport();
+new Thread( batchExport ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();
+

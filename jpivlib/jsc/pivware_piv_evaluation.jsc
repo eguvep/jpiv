@@ -1,0 +1,377 @@
+/** Performes a PIV image analysis using PIVware. 
+*
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+import java.text.DecimalFormat;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Vector;
+import com.sun.media.jai.codec.PNMEncodeParam;
+import com.sun.media.jai.codec.ImageEncoder;
+import com.sun.media.jai.codec.ImageCodec;
+import javax.media.jai.JAI;
+
+pivWareEvaluation() {
+
+	// variables declaration
+	jpiv2.ScriptDlg myDlg;
+	String pivWareLocation;
+	boolean pivWareDeleteTmp;
+	boolean pivWareFftZeroPadding;
+	jpiv2.Settings settings = jpiv.getSettings();
+	String[] files;
+	int imgWidth;
+	int imgHeight;
+	String imgType;
+	String imgDir;
+	String scanOutPath;
+	String scanShiftPath;
+	String destPath;
+	String scanInfPath;
+	DecimalFormat scanInfFormat = new DecimalFormat("0000");
+	DecimalFormat fileNumFormat;
+	String[] pivWareCmd = new String[1];
+	int passes;
+	Vector tmpFiles = new Vector();
+
+	/** Start an evaluation as a new thread.
+	*/
+	private void run() {
+		files = jpiv.getListFrame().getSelectedElements();
+		if(files == null) {
+			System.out.println("No files selected.");
+		}
+		else {
+			initDlg();
+			int proceed = myDlg.display();
+			if (proceed == myDlg.EXECUTE_OPTION && chooseDestPath()) {
+				runPivWareEvaluation();
+			} else {
+				System.out.println("cancelled.");
+			}
+		}
+    	}
+	
+	/** Initialize user dialog.
+	*/
+	private void initDlg() {
+		myDlg = new jpiv2.ScriptDlg(jpiv,
+			"PivWare PIV Evaluation",
+			"mail@vennemann-online.de");
+		myDlg.setDate("February 2007");
+		myDlg.setOs("Linux");
+		myDlg.setDependencies("PivWare");
+		myDlg.setComment(
+			"Performes a PIV image analysis using PivWare." +
+			"For more information on PivWare, type \"man secan7\" into your " +
+			"terminal. Only PivWare specific variables are set via this dialog. " +
+			"All other settings, like single or double frame images, " +
+			"single image or ensemble evaluation, interrogation window size, " +
+			"single or multi pass, region of interest etc. are specified on " +
+			"the PIV panels in the jpiv settings tree.");
+		myDlg.addVariable("pivWareLocation", "/usr/local/pivware/bin", "location of the PivWare binaries");
+		myDlg.addVariable("pivWareDeleteTmp","true", "whether temporary files like \"scan.shift\" or \"scan.inf\" should be deleted (true) or not (false)");
+		myDlg.addVariable("pivWareFftZeroPadding", "true", "whether zero padding should be used (true) or not (false)");
+	}
+	
+	/** Initialize variables.
+	*/
+	private void initVariables() {
+		// variables from the dialog
+		pivWareLocation = myDlg.getAsString("pivWareLocation");
+		pivWareDeleteTmp = myDlg.getAsBoolean("pivWareDeleteTmp");
+		pivWareFftZeroPadding = myDlg.getAsBoolean("pivWareFftZeroPadding");
+		// path names and files
+		imgDir = files[0].substring(
+			0, files[0].lastIndexOf(jpiv.fileSeparator)
+			);
+		scanShiftPath = jpiv.workDir + jpiv.fileSeparator + "scan.shift";
+		scanOutPath = jpiv.workDir + jpiv.fileSeparator + "jpiv.out";
+		scanInfPath = jpiv.workDir + jpiv.fileSeparator + "scan.inf";
+		// image size and type
+		jpiv2.PivImg img = new jpiv2.PivImg(jpiv, files[0]);
+		imgWidth = img.getWidth();
+		imgHeight = img.getHeight();
+		if(settings.pivSequence == settings.PIV_TWO_IMG) {
+			imgHeight /= 2;
+		}
+		img = null;
+		imgType = files[0].substring(files[0].lastIndexOf('.')+1);
+		imgType.toLowerCase();
+		// convert images, if necessary
+		if(imgType.equals("tif") || 
+		   imgType.equals("tiff") ||
+		   imgType.equals("png") ||
+		   imgType.equals("jpg") ||
+		   imgType.equals("jpeg") ||
+		   imgType.equals("bmp")) {
+			System.out.print("Convert images");
+			for(int f=0; f<files.length; f++) {
+				System.out.print(".");
+				new jpiv2.PivImg(jpiv, files[f]).writePivImageToFile("RAW", files[f]);
+				files[f] = files[f].substring(0, files[f].lastIndexOf('.')) + ".RAW";
+				imgType = "raw";
+				tmpFiles.add( files[f] );
+			}
+			System.out.println("finished.");
+		}
+		// number of passes
+		passes = settings.pivMultiPass;
+		// decimal format for destination file numbering
+		int digits = 1 + (int) ( Math.log(files.length) / Math.log(10) );
+		String format = new String();
+		for(int i=0; i<digits; i++) format += "0";
+		fileNumFormat = new java.text.DecimalFormat(format);
+	}
+
+	/** Show a file chooser for the output destination.
+	*/
+	private boolean chooseDestPath() {
+		jpiv2.FlexFileChooser flexFileChooser = jpiv.getFlexFileChooser();
+		flexFileChooser.setFiletype(flexFileChooser.JVC, false);
+		int approve = flexFileChooser.showSaveDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			destPath = flexFileChooser.getSelectedFile().toString();
+			return(true);
+		}
+		else return(false);
+	}
+	
+	/** Create a command-line and execute it.
+	*/
+	private void runPivWareEvaluation() {
+		System.out.println("Initialize variables.");
+		initVariables();
+		System.out.println("Generate PivWare command line." );
+		// loop over files
+		for (int f = 0; f < files.length; ++f) {
+			// loop over passes
+			for(int p = 1; p <= passes; ++p) {
+				createScanInf(p);
+				// input files and options
+				if (settings.pivSequence == settings.PIV_CONSECUTIVE) {
+					if (f==0) f = 1;
+					pivWareCmd[0] = "echo " + files[f-1] + " " + files[f] + " | ";
+				}
+				else if (settings.pivSequence == settings.PIV_SKIP) {
+					if (f==0) f = settings.pivSkip+1;
+					pivWareCmd[0] = "echo " + files[f-settings.pivSkip-1] + " " + files[f] + " | ";
+				}
+				else if (settings.pivSequence == settings.PIV_CASCADE) {
+					if (f==0) f = 1;
+					pivWareCmd[0] = "echo " + files[0] + " " + files[f] + " | ";
+				}
+				else if (settings.pivSequence == settings.PIV_TWO_IMG &&
+					!settings.pivSumOfCorr) {
+						pivWareCmd[0] = "echo " + files[f] + " | ";
+				}
+				else {
+					pivWareCmd[0] = "";
+				}
+				if (settings.pivSumOfCorr) {
+					if (files.length == 1) System.err.println("Use more than one file for ensemble correlation.");
+					f = files.length;
+					pivWareCmd[0] = "echo " + getEnsembleFileList() + " | " + 
+					pivWareLocation + 							jpiv.fileSeparator + "secan7 -E -C" + files.length;
+				}
+				else {
+					pivWareCmd[0] += pivWareLocation +
+					jpiv.fileSeparator + "scan7 -N -C";
+				}
+				if (imgType.equalsIgnoreCase("pgm")) {
+					pivWareCmd[0] += " -IP ";
+				}
+				if (imgType.equalsIgnoreCase("raw")) {
+					pivWareCmd[0] += " -IR ";
+				}
+				else if (imgType.equalsIgnoreCase("imx")) {
+					pivWareCmd[0] += " -IX ";
+				}
+				else {
+					pivWareCmd[0] += " -I7 ";
+				}
+				if (pivWareFftZeroPadding) {
+					pivWareCmd[0] += " -z ";
+				}
+				if (settings.pivSequence != settings.PIV_TWO_IMG) {
+					pivWareCmd[0] += " -D ";
+				}
+				// multipass
+				if (p != 1) {
+					pivWareCmd[0] += " -s ";
+					jpiv2.PivData pivData = new jpiv2.PivData(scanOutPath);
+					// median test
+					if(settings.pivNormMedianTest) {
+						pivData.normalizedMedianTest(
+							settings.normMedianTestNoiseLevel, 
+							settings.normMedianTestThreshold);
+					}
+					// replace
+					if(settings.pivReplace) {
+						pivData.replaceByMedian(false, false);
+					}
+					// median filter
+					if(settings.pivMedian) {
+						pivData.replaceByMedian(true, true);
+					}
+					// smoothing
+					if(settings.pivSmoothing) {
+						pivData.smooth(true);
+					}
+					// grid refinement
+					int x0, y0, x1, y1;
+					if(settings.pivROI) {
+						x0 = settings.pivROIP1x + settings.pivWindow[0][0] / 2;
+						y0 = settings.pivROIP1y + settings.pivWindow[1][0] / 2;
+						x1 = (int)( ( settings.pivROIP2x - settings.pivROIP1x ) / settings.pivWindow[0][0] ) * 
+						settings.pivWindow[0][0] - settings.pivWindow[0][0] / 2;
+						y1 = (int)( ( settings.pivROIP2y - settings.pivROIP1y ) / settings.pivWindow[1][0] ) * 
+						settings.pivWindow[1][0] - settings.pivWindow[1][0] / 2;
+					}
+					else {
+						x0 = settings.pivWindow[0][0] / 2;
+						y0 = settings.pivWindow[1][0] / 2;
+						x1 = (int)( imgWidth / settings.pivWindow[0][0] ) * 
+						settings.pivWindow[0][0] - settings.pivWindow[0][0] / 2;
+						y1 = (int)( imgHeight / settings.pivWindow[1][0] ) * 
+						settings.pivWindow[1][0] - settings.pivWindow[1][0] / 2;
+					}
+					if(settings.pivHorPreShift < 0) x0 -= settings.pivHorPreShift;
+					if(settings.pivVerPreShift < 0) y0 -= settings.pivVerPreShift;
+					if(settings.pivHorPreShift > 0) x1 -= settings.pivHorPreShift;
+					if(settings.pivVerPreShift > 0) y1 -= settings.pivVerPreShift;
+					pivData.resample(x0, y0, x1, y1,
+						settings.pivWindow[4][p-1],
+						settings.pivWindow[5][p-1]);
+					pivData.writeDataToFile(scanShiftPath, false);
+					new File(scanShiftPath.substring(
+						0, scanShiftPath.lastIndexOf('.')) + ".jvc").renameTo(
+					new File(scanShiftPath));
+				}
+				// output file
+				pivWareCmd[0] += " > " + scanOutPath;
+				// execution
+				System.out.println("Execute command: ");
+				System.out.println(pivWareCmd[0]);
+				System.out.println("PIVware runs in background - please wait.");
+				jpiv.getCmdInterpreter().execute(
+					pivWareCmd,
+					jpiv.getCmdInterpreter().TYPE_SHELLCOMMAND
+					);
+			}
+			// saving the results
+			int index = destPath.lastIndexOf('.');
+			if(index != -1) destPath = destPath.substring(0, index);
+			jpiv2.FileHandling.copyFile(scanOutPath, 
+					            destPath + fileNumFormat.format(f) + ".jvc");
+			jpiv.getListFrame().appendElement(destPath + fileNumFormat.format(f) + ".jvc");
+		}
+		deleteTempFiles();
+		System.out.println("PIV evaluation finished.");
+	}
+
+	/** Creates the file "scan.inf" in the current working directory. 
+	* The parameter-file is used by PIVware.
+	*/
+	private void createScanInf(int pass) {
+		int[] scanInf = new int[14];
+		scanInf[0] = imgWidth;
+		scanInf[1] = imgHeight;
+		scanInf[2] = settings.pivWindow[0][pass-1];
+		scanInf[3] = settings.pivWindow[1][pass-1];
+		scanInf[4] = settings.pivWindow[4][pass-1];
+		scanInf[5] = settings.pivWindow[5][pass-1];
+		if(settings.pivROI) {
+			scanInf[6] = settings.pivROIP1x;
+			scanInf[7] = settings.pivROIP1y;
+			scanInf[8] = settings.pivROIP2x;
+			scanInf[9] = settings.pivROIP2y;
+		}
+		else {
+			scanInf[6] = settings.pivWindow[0][pass-1] / 2;
+			scanInf[7] = settings.pivWindow[1][pass-1] / 2;
+			scanInf[8] = imgWidth - settings.pivWindow[2][pass-1] / 2 - settings.pivHorPreShift;
+			scanInf[9] = imgHeight - settings.pivWindow[3][pass-1] / 2 - settings.pivVerPreShift;
+		}
+		scanInf[10] = settings.pivWindow[2][pass-1];
+		scanInf[11] = settings.pivWindow[3][pass-1];
+		scanInf[12] = settings.pivHorPreShift;
+		scanInf[13] = settings.pivVerPreShift;
+		try {
+			jpiv2.FileHandling.writeArrayToFile(scanInf, scanInfPath, scanInfFormat);
+		} catch (IOException e) {
+			System.err.println(
+			"jpiv2.JPiv.createScanInf(int pass): " + e.toString()
+			);
+		}
+	}
+
+	/** Creating a file list for ensemble evaluation.
+	*/
+	private String getEnsembleFileList() {
+		String list = "";
+		for(int f = 1; f < files.length; f++) {
+			if (settings.pivSequence == settings.PIV_CONSECUTIVE) {
+				list += files[f-1] + " " + files[f] + " ";
+			}
+			else if (settings.pivSequence == settings.PIV_SKIP) {
+				if (f==1) f = f+settings.pivSkip;
+				list += files[f-settings.pivSkip-1] + " " + files[f] + " ";
+			}
+			else if (settings.pivSequence == settings.PIV_CASCADE) {
+				list += files[0] + " " + files[f] + " ";
+			}
+			else {
+				if (f==1) list+= files[0] + " ";
+				list += files[f] + " ";
+			}
+		}
+		return(list);
+	}
+
+	/** Delete all temporary files used by PivWare, like images in raw format,
+	* scan.shift, and scan.if files.
+	*/
+	private void deleteTempFiles() {
+		tmpFiles.add(scanShiftPath);
+		tmpFiles.add(scanInfPath);
+		tmpFiles.add(scanOutPath);
+		File file;
+		if (pivWareDeleteTmp) {
+			while(!tmpFiles.isEmpty()) {
+				file = new File((String)tmpFiles.get(0));
+				if(file.exists()) {
+					System.out.println("Delete temporary file: " + tmpFiles.get(0));
+					file.delete();
+				}
+				tmpFiles.remove(0);
+			}
+		}
+	}
+
+	return(this);
+
+}
+
+// start the piv evaluation in background and clean up variables
+pivWareEvaluation = pivWareEvaluation();
+new Thread( pivWareEvaluation ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();

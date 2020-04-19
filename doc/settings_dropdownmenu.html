@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV manual</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV manual">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV manual">
+		<meta name="DC.Date" content="2007-02-07">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/settings_dropdownmenu.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Drop down menu</h2>
+			<p>
+<b>File - choose files</b><br>
+Opens a file choser dialog. The selected files are appended to the list of the &quot;Files&quot; frame.<br>
+<b>File - exit</b><br>
+Exit the program and free all recources.<br>
+<br>
+<b>PIV - run PIV image analysis</b><br>
+Start a PIV image analysis in a seperate thread. Expects at least one selected image file link in the &quot;Files&quot; frame. The evaluation is dependent on the settings on the panels JPIV - PIV - General and JPIV - PIV - Interrogation Window.<br>
+<b>PIV - run single-pixel-sum-of-correlation</b><br>
+Start a single pixel ensemble correlatin. Expects a number of selected image file links in the &quot;Files&quot; frame. Parameters are set on the JPIV - PIV - Single Pixel Correlation panel. Eventually a pre-shift file is calculated based on the settings on the panels JPIV - PIV - General and JPIV - PIV - Interrogation Window.<br>
+<br>
+<b>Script - open script</b><br>
+Copies the content of a text file into the &quot;Cmd&quot; frame.<br>
+<b>Script - save script</b><br>
+Copies the content of the &quot;Cmd&quot; frame into a file.<br>
+<b>Script - execute script</b><br>
+Hands the content of a text file over to a BeanShell interpreter.<br>
+<br>
+Below, all script file names are listed that are found in the directory named &quot;jsc&quot; below the JPIV library directory that is specified on the tab JPIV - Preferences - Paths.
+<br>
+<b>Vector - normalized median test</b><br>
+Marks vectors as invalid using the normalized median test proposed by Jerry Westerweel and Fulvio Scarano (Experiments in Fluids (2005) 39: 1096-1100). The velocity data remains unchanged, but the value in the fifth column (generally the peak height) is set to -1 for invalid vectors. Parameters are set on the JPIV - Vector Processing - Normalized Median Test panel. All vector processing functions expect selected files in the &quot;Files&quot; frame.<br>
+<b>Vector - invalidate isolated vectors</b><br>
+Sets the value in the fifth column of a vector data file to -1 for all vectors that have less neighbours than specified on the panel JPIV - Vector Processing - Remove Isolated Vectors.<br>
+<b>Vector - replace invalid vectors by median</b><br>
+Replaces invalid vectors by the median of their eight surrounding vectors. A vector is considered to be invalid if its fifth column is negative or null.<br>
+<b>Vector - remove invalid vectors (set to zero)</b><br>
+Sets the value in the third and forth column to zero, when the value in the fifth column is negative or null.<br>
+<b>Vector - substract reference displacement</b><br>
+Substracts the values specified on the panel JPIV - Vector Processing - Substract Reference Displacement from the third and fourth column of the selected vector data files.<br>
+<b>Vector - 3x3 median filter</b><br>
+Replaces every vector by the median of its surrounding vectors inclusive itself.<br>
+<b>Vector - 3x3 smoothing</b><br>
+Replaces every vector by the average of its surrounding vectors inclusive itself.<br>
+<b>Vector - average vector fields</b><br>
+Takes a number of selected vector data files as input and combines them in a single file by calculating the average displacements. All vector data files should have the same number of nodes.<br>
+<b>Vector - normal vorticity</b><br>
+Calculates the vorticity component perpendicular to the measurement plane, &omega;z, and writes it to the fifth column. The derivatives in &omega;z = &part;uy/&part;x - &part;ux/&part;y are calculated by means of a five point linear regression. This noise-insensitive method is especially useful for oversampled data, and structures that are large compared to the grid spacing. Structures that are of the same magnitude as the grid spacing might be smoothed too heavily.<br>
+<b>Vector - in-plane shear</b><br>
+Calculates &epsilon;xy = &part;ux/&part;y + &part;uy/&part;x. Derivatives are calculated analog to the normal vorticity derivatives.<br>
+<b>Vector - extensional strain</b><br>
+Calculates &eta; = &part;ux/&part;x + &part;uy/&part;y. Derivatives are calculated analog to the normal vorticity derivatives.<br>
+<b>Vector - reconstruct third velocity component</b><br>
+Calculates the third velocity component for a selected 3d stack of 2d vector fields, assuming conservation of mass and incompressibility. For this special case, the divergence is zero, or &nabla;u = 0. The out of plane velocity gradient, &part;uz, is then calculated by &part;uz= (-&part;ux/&part;x - &part;uy/&part;y) &part;z = -&eta;. The derivatives are calculated as explained for the normal vorticity. It is further assumed, that the first (top) measurement plane is outside the flow. The absolute out-of-plane velocity component for every point i,j and every plane k is then calculated by integrating along z, starting with the top plane (uz<small><sub>i,j,k</small></sub> = &sum;&part;uz<small><sub>i,j,0...k</small></sub>). The distance between the measurements planes, &part;z, is defined <a class="cont" href="settings_vectorprocessing_3drecon.html">on the 3C Reconstruction settings tab</a>.<br>
+<br>
+<b>Frames - arrange internal frames</b><br>
+Arranges the internal frames &quot;Settings&quot;, &quot;Files&quot;, and &quot;Cmd&quot; next to each other.<br>
+<br>
+<b>Docs - show html documentatin</b><br>
+Opens the panel JPIV - Documentation and shows the file &quot;index.html&quot;<br>
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

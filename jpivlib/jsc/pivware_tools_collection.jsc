@@ -1,0 +1,138 @@
+/** PivWare Post Processing
+*
+* Applies a user defined shell command to selected files.
+*
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+pivWarePostProcessing() {
+
+	// global variables
+	jpiv2.ScriptDlg myDlg;
+	
+	// initialize the user dialog
+	void initDlg() {
+		myDlg = new jpiv2.ScriptDlg(jpiv,
+			"PivWare Post Processing",
+			"mail@vennemann-online.de");
+		myDlg.setDate("February 2005");
+		myDlg.setOs("Linux");
+		myDlg.setDependencies("PivWare, bash");
+		myDlg.setComment(
+			"Select and edit the command you want to execute. A " +
+			"command is selected by highlighting a row in the table below. The " +
+			"command is applied to all the files that are selected in " +
+			"the 'Files' frame. The file 'nodes.inf' is automatically created " +
+			"and deleted. Combine commands by using a pipe '|'. ");
+		myDlg.addVariable("0", "my command", "add your own command here");
+		myDlg.addVariable("1", "residu", "compute residuals for a piv data set");
+		myDlg.addVariable("2", "medtst", "perform a median test on a piv data set");
+		myDlg.addVariable("3", "discrd 0.8", "label large residuals as spurious data");
+		myDlg.addVariable("4", "replce", "interpolate discarded data (crashes for large number of discarded vectors!)");
+		myDlg.addVariable("5", "median", "median filter for a piv data set");
+		myDlg.addVariable("6", "flipy | vortlp | flipy", "compute the vorticity");
+		// add further commands here e.g.
+		// myDlg.addVariable("7", "my new command", "short description");
+		myDlg.addVariable("preliminary", "source /usr/local/piv/piv.csh", "preliminary commands");
+	}
+	
+	void run() {
+		initDlg();
+		String destPath = new String();
+		String[] bshCmd = new String[1];
+		jpiv2.CmdInterpreter ci = jpiv.getCmdInterpreter();
+		// make the dialog visible
+		int proceed = myDlg.display();
+		// user pressed 'execute'
+		if (proceed == myDlg.EXECUTE_OPTION) {
+			// get the choosen command 
+			String cmdNum = String.valueOf(myDlg.getSelectedRow());
+			if(cmdNum.equals("-1")) {
+				System.out.println("No command selected.");
+				return;
+			}
+			String cmd = myDlg.getAsString(cmdNum);
+			String preliminary = myDlg.getAsString("preliminary");
+			// get the source files
+			String[] sourceFiles = jpiv.getListFrame().getSelectedElements();
+			if(sourceFiles == null) {
+				System.out.println("Please select at least one file first.");
+				return;
+			}
+			// create format for destination file numbering
+			int digits = 1 + (int) ( Math.log(sourceFiles.length) / Math.log(10) );
+			String format = new String();
+			for(int i=0; i<digits; i++) format += "0";
+			java.text.DecimalFormat df = new java.text.DecimalFormat(format);	
+			// get the destination file
+			jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+			myFileChooser.setFiletype(myFileChooser.ALL, false);
+			int approve = myFileChooser.showSaveDialog(jpiv);
+			if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+				destPath = myFileChooser.getSelectedFile().toString();
+			} else {
+				System.out.println("No destination file specified.");
+				return;
+			}
+			// strip of file extension
+			int i = destPath.lastIndexOf('.');
+			if (i == -1) i = destPath.length();
+			destPath = destPath.substring(0, i);
+			// execute preliminary command
+			bshCmd[0] = preliminary;
+			ci.execute(bshCmd, ci.TYPE_SHELLCOMMAND);
+			// loop over all files
+			for(int f=0; f<sourceFiles.length; f++) {
+				// create nodes.inf
+				bshCmd[0] = "getnodes < " +
+					sourceFiles[f] +
+					" > " +
+					"nodes.inf";
+				ci.execute(bshCmd, ci.TYPE_SHELLCOMMAND);
+				// execute the command
+				bshCmd[0] = "( " +
+					cmd +
+					" )" +
+					" < " + 
+					sourceFiles[f] +
+					" > " +
+					destPath + df.format(f) + ".jvc";
+				System.out.println(bshCmd[0]);
+				ci.execute(bshCmd, ci.TYPE_SHELLCOMMAND);
+				// add a link to the filelist
+				jpiv.getListFrame().appendElement(destPath + df.format(f) + ".jvc");
+			}
+			// delete nodes.inf
+			bshCmd[0] = "rm nodes.inf";
+			ci.execute(bshCmd, ci.TYPE_SHELLCOMMAND);
+			System.out.println("finished");
+			return;
+		// The user pressed 'quit'.
+		} else {
+			System.out.println("cancelled");
+			return;
+		}
+	}
+	
+	return this;
+}
+
+// start process in background and free memory
+pivWarePostProcessing = pivWarePostProcessing();
+new Thread( pivWarePostProcessing ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();

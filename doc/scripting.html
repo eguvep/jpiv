@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV scripting</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV scripting">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV scripting">
+		<meta name="DC.Date" content="2009-05-02">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/scripting.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Scripting Tutorial</h2>
+			<p>
+			Fed up with point and click?
+			</p>
+			<h3>General</h3>
+			<p>
+			JPIV comes with powerful scripting capabilities. To avoid confusion: the implemented scripting language has nothing to do with Java-Script. The scripting capabilities are implemented by using a Java-Interpreter class programmed by Pat Niemeyer in the scope of the BeanShell project.
+For more information about BeanShell see: <a class="cont" href="http://www.beanshell.org">http://www.beanshell.org</a>.
+The scripting syntax is identical to Java with a lot of simplifications.
+			</p>
+			<h3>Hello world</h3>
+			<p>
+A first, simple script could be the following:
+			</p>
+			<p>
+<code>
+divide(double a, double b) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(a/b);<br>
+}<br>
+</code>
+			</p>
+			<p>
+The first line defines the function <code>divide</code>.
+The function takes two parameters of the type double.
+The function body contains just one line: a call of the method <code>println</code> of <code>System.out</code>.
+To run the script, type the three lines into the &quot;Cmd&quot; window.
+Select the three lines with the mouse and click <b>execute selection</b> from the context menu.
+Now the function definition is stored in the memory.
+Now you can use the function in a script:
+			</p>
+			<p>
+<code>
+divide(8, 4);<br>
+divide(9, 3);<br>
+divide(10, 2.5);
+</code>
+			</p>
+			<p>
+The execution of this lines results in the following output:
+			</p>
+			<p>
+<code>
+2.0<br>
+3.0<br>
+4.0
+</code>
+			</p>
+			<h3>Calling a method</h3>
+			<p>
+Java is designed for object oriented programming.
+That means that logic components of a program are represented by objects.
+Each object has methods that can be called to do something with this object.
+A class is the implementation or description of an object and its methods.
+An object is an instance of a class that is constructed at runtime.
+Methods are accessed with the help of the dot-notation.
+See the following example to see what that means.
+			</p>
+			<p>
+First a new object <code>String</code> is created and initilized.
+Then another object is created which is a string-array <code>String[]</code>.
+The String class has a method called <code>split(String regex)</code>.
+This method splits a text-string into peaces and returns this peaces as a string-array object.
+The method <code>split(String regex)</code> takes one parameter <code>regex</code> which is also a string.
+The parameter indicates where to split the text-string.
+In the example below we use a space-character.
+			</p>
+			<p>
+<code>
+// create a new String object and initialize it<br>
+String myString = &quot;I am a string&quot;;<br>
+// create a new String-array object and  use the<br>
+// method split(String regex) to split the string at <br>
+// whitespaces<br>
+String[] words = myString.split(&quot; &quot;);<br>
+// print the result<br>
+for(int i = 0; i &lt; words.length; i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(words[i]);<br>
+}<br>
+<br>
+I<br>
+am<br>
+a<br>
+string<br>
+</code>
+			</p>
+			<h3>Available classes and methods</h3>
+			<p>
+You can use all core Java classes plus all classes that belong to the jpiv2-package to write a script.
+Both libraries are pretty well documented on the internet.
+See <a class="cont" href="http://java.sun.com/j2se/1.5.0/docs/api/">http://java.sun.com/j2se/1.5.0/docs/api/</a> for the documentation of the Java 2 Platform Std. Ed. v1.5.0. 
+After opening the documentation scroll down in the left frame until you find the class <code>String</code> and klick on it.
+In the main frame the class description appears.
+Scroll down to see a desrcription of the method <code>split(String regex)</code> that you just used in the example above.
+			</p>
+			<p>
+To see the documentation of the jpiv2-package click on the &quot;javadoc&quot; link in the navigation panel of this page.
+			</p>
+			<h3>Using methods of existing objects</h3>
+			<p>
+When you are using the jpiv2-package you might want to use methods of already instantiated objects, like the &quot;Files&quot; window or another already existing program-component.
+Here you need to know that the main program's object name is &quot;jpiv&quot;.
+By writing <code>jpiv.method(parameter1, parameter2, ...)</code> you can access this methods.
+&quot;jpiv&quot; is a handle to the main program object.
+&quot;jpiv&quot; also provides methods to get handles to other program components.
+Call <code>jpiv.getListFrame()</code> for example to get a handle to the &quot;File&quot; window.
+The following example shows how to use methods of already existing objects.
+The code opens the first three files in the &quot;File&quot; window.
+			</p>
+			<p>
+<code>
+for(int i = 0; i &lt; 3; i++) { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;// getting a handle to the &quot;File&quot; window of the running program<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// the &quot;File&quot; window is an instance of the class ListFrame which<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// is part of the jpiv2 package<br>
+&nbsp;&nbsp;&nbsp;&nbsp;jpiv2.ListFrame lf = jpiv.getListFrame();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// calling the jpiv2.ListFrame method &quot;getElementAt(int i)&quot;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String filename = lf.getElementAt(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// call the display(filename) method of the running program to show the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// image on screen<br>
+&nbsp;&nbsp;&nbsp;&nbsp;jpiv.display(filename);<br>
+}<br>
+</code>
+			</p>
+			<h3>Executing a script file</h3>
+			<p>
+You can write scripts with any text editor. Save the script either ascii or UTF-8 encoded.
+The script is executed by calling <b>Script - execute script file</b>. 
+If the script is saved into the <code>./jlib/jsc/</code> directory, a link to this file in form of a menu item will be generated automatically in the <b>Script</b> drop down menu during startup.
+			</p>
+			<p>
+Use the method <code>jpiv2.ScriptDlg(...)</code> for user interaction. 
+This class has <code>set...</code> and <code>get...</code> methods to configure the dialog and to retrieve the variable values. 
+The method <code>display()</code> brings up the dialog like shown on the figure below.
+			</p>
+			<p align="center">
+                        <img src="fig/scriptDlg.jpg" alt="the script dialog"><br><br>
+			<i>User interaction via the script dialog.</i>
+                        </p>
+			<h3>Examples</h3>
+			<p>
+Two example scripts are included in the <code>./jlib/jsc/</code> directory. <b>1example_scripting_introduction</b> and <b>2example_resample_vector_field</b> demonstrate how to:
+			</p>
+<ul type="circle">
+<li>configure a graphical dialog to interact with the user</li>
+<li>get variables from this dialog</li>
+<li>get variables from a running jpiv instance</li>
+<li>display a file chooser dialog</li>
+<li>manipulate variables of a running jpiv instance</li>
+<li>execute a shell-command that calls matlab to process a matlab function</li>
+</ul>
+			<p>
+Open the script files in a text editor and read the comments between the code lines.
+			</p>
+			<h3><a name="CmdLineOptions">Command Line Options</h3>
+			<p>
+You might wish to integrate JPIV into your own program. This is easily possible by calling JPIV from within your code on the command line. JPIV understands only a single command line option: This is the name of a file, that will be interpreted as a BeanShell script. This script will be executed immediately after startup. From within this script, you can access all JPIV classes and methods, which is more powerful than any other command line option would be. Example for calling jpiv: <code>java -jar -Xmx4G jpiv.jar myScript.jsc</code>
+			</p>
+			<p>
+Some people prefer jpiv to accept a list of images on the command line. The images should be evaluated immediately. The executable <a class="cont" href="jpivc.jar">jpivc.jar</a> can do that. Launch a PIV evaluation via command line by executing <code>java -jar -Xmx4G jpivc.jar *.tiff</code>, for example. The files *.tiff are your PIV images.
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

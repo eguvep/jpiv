@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV downloads</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV downloads">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV downloads">
+		<meta name="DC.Date" content="2013-03-27">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/download.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Download</h2>
+			<h3>Download Java Executable</h3>
+			<p>
+			<a class="cont"
+			href="http://www.jpiv.vennemann-online.de/jpiv.jar">Download jpiv.jar</a>.
+			</p>
+			<h3>Launch Java Executable</h3>
+			<ol>
+			  <li>If not done already, install the Java Runtime Environment (JRE) from <a class="cont"
+			  href="https://www.java.com">java.com</a>. On 64 bit systems, make sure you are running a 64 bit JRE! Type <code>java -version</code> into your terminal to verify this.</li>
+			  <li>Run JPIV by double clicking on the file in your file manager or by typing <code>java -jar jpiv.jar</code> into your terminal. If you experience an out of memory error or poor performance, increase the avalable memory: To allow up to four gigabytes, type <code>java -jar -Xmx4G jpiv.jar</code>.</li>
+			</ol>
+			</p>
+			<h3>Command Line Options</h3>
+			<p>
+			<a class="cont" href="scripting.html#CmdLineOptions">Refer to the Scripting tutorial</a> to learn using JPIV on the command line.
+			</p>
+			<h3>Additional packages</h3>
+			<p>
+			You may want to add some additional functionality, like scripts for batch processing, masking, synthetic image generation, joining and splitting images, directory processing, native libraries for reading <a class="cont" href="http://www.lavision.de">LaVision</a> IMX and IM7 image data, and offline documentation files. Click on the symbol below to download a zip-archive (18.4 MB), extract the files to your hard drive and tell JPIV where to find the unpacked directory, <a class="cont" href="settings_preferences_paths.html">as explained in the documentation section</a>. Restart JPIV to list the scripts of the jpivlib/jsc directory in the Scripts drop-down menu.
+			<br>
+			<a href="jpivlib.zip"><img src="fig/jpivlib_zip.png" alt="JPIV add-on resources"></a>
+			(last update of library: September 24 2011)
+			</p>
+			<h3>Source code</h3>
+			<p>
+			The source code is available on the sourceforge subversion server:
+			<br>
+			<a href="https://sourceforge.net/p/jpiv/code/"><img src="fig/source_zip.png" alt="JPIV source code"></a>
+			<br>
+			Additionally to the jpiv source files, the directory structure also contains the <a class="cont" href="http://www.unidata.ucar.edu/software/netcdf-java/">NetCDF Java Library</a> for reading synthetic image generation parameter files, the <a class="cont" href="http://www.beanshell.org/download.html">BeanShell Core Interpreter Classes</a> for executing scripts and the <a class="cont" href="http://java.freehep.org/">Free HEP library</a> for vector graphics export. The <a class="cont" href="doc/index.html">source code documentation</a> will be a good companion guiding you through the code.
+			</p>
+			<h3>Test images</h3>
+			<p>
+			For testing JPIV, you might find the following images useful (0.5 MB):
+			<br>
+			<a href="piv_tst_img.zip"><img src="fig/piv_tst_img_zip.png" alt="PIV test images"></a>
+			</p>
+			<p>
+			To try the reconstruction of the third velocity component, please use the images below (3 MB). Reference vector fields for comparison are included, as well as a data sheet with the synthetic image generation properties.
+			<br>
+			<a href="synt3d.zip"><img src="fig/jpiv3d_zip.png" alt="3D reconstruction test images"></a>
+			</p>
+			<p>
+			Find more challenging test images at <a class="cont" href="http://www.pivchallenge.org/">http://www.pivchallenge.org/</a>.
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

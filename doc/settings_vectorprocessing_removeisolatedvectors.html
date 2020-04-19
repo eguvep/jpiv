@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV manual</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV manual">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV manual">
+		<meta name="DC.Date" content="2007-02-07">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/settings_vectorprocessing_removeisolatedvectors.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Settings - Vector Processing - Remove Isolated Vectors</h2>
+			<p align="center">
+                        <img src="fig/settings_removeisolatedvectors.jpg" alt="settings-panel: Vector Processing - Remove Isolated Vectors."><br><br>
+			<i>settings-panel: Vector Processing - Remove Isolated Vectors.</i>
+                        </p>
+			<p>
+This filter can be accessed via the drop down menu Vector - invalidate isolated vectors.<br>
+<br>
+<b>Invalidate vectors with less than...</b><br>
+Specify the minimum number of neighbours to keep a vector. Should be an integer number between 0 (does not remove anything) and 8 (removes all vectors adjacent to a hole). Interesting are repeted applications of this filter with this value set to 4 or 5. A value of 4 will only erode small islands of vectors but keep big ones. A value of 5 will only erode the edges of larger islands, and completely remove small islands. A value smaller than 6 will not significantly widen holes.<br>
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

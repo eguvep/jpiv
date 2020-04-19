@@ -1,0 +1,164 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+processDirectory() {
+
+	// global variables
+	private int operation;
+	private static int PIV_EVALUATION = 0;
+	private static int EMPTY = 1;
+	private String destFileName;
+	private java.io.File[] directories;
+	private jpiv2.ScriptDlg myDlg;
+
+	// initialize graphical user dialog
+	private void initDlg() {
+		myDlg = new jpiv2.ScriptDlg(jpiv,
+			"Process Directories",
+			"mail@vennemann-online.de");
+		myDlg.setDate("March 2007");
+		myDlg.setOs("independent");
+		myDlg.setDependencies("none");
+		myDlg.setComment(
+			"Provides a loop over directories. The selected " +
+			"operation will be applied to all files per directory " +
+			"A file chooser dialog will appear that " +
+			"lets you select the directories to be processed.");
+		myDlg.addVariable("0", "PIV evaluation", "PIV evaluation");
+		myDlg.addVariable("1", "empty", "not yet implemented");
+	}
+	
+	// initialize variables
+	private void initVariables() {
+		operation = myDlg.getSelectedRow();
+		if(operation == -1) {
+			System.out.println("No operation selected, assume \"PIV Evaluation\".");
+			operation = PIV_EVALUATION;
+		}
+	}
+	
+	// batch PIV processing
+	// inDirectory: the directory to process
+	private void batchPivProcessing(String inDirectory) {
+		// read the directory
+		java.io.File dir = new java.io.File( inDirectory );
+		String[] imgRead = {"png", "tif", "tiff", "pgm", "im7", "imx"};
+		jpiv2.JpivFileFilter ff = new jpiv2.JpivFileFilter(
+			imgRead, "read compatible image formats");
+		java.io.File[] files = dir.listFiles( (java.io.FileFilter)ff );
+		// append files to the file list and select them
+		if (files != null) {
+			jpiv2.ListFrame lf = jpiv.getListFrame();
+			lf.clearList();
+			for (int f=0; f<files.length; f++) {
+				if (files[f].isFile()) lf.appendElement( files[f].toString() );
+			}
+			int end = lf.getNumberOfElements() - 1;
+			lf.selectElements(0, end);
+			// run PIV evaluation
+			synchronized (lf) {	
+				new jpiv2.PivEvaluation(jpiv).start();
+				// stop this thread until the PIV evaluation is finished
+				try {
+					lf.wait();
+				} catch (java.lang.InterruptedException e) {
+					System.out.println( e.toString() );
+				}
+			}
+		}
+	}
+	
+	// show a file chooser dialog for the input directories
+	private void selectInputDirectories() {
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		myFileChooser.setFiletype(myFileChooser.DIR, true);
+		int approve = myFileChooser.showOpenDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			directories = myFileChooser.getSelectedFiles();
+		} else {
+			System.out.println("No input directories selected.");
+			directories = null;
+		}
+	}
+	
+	// show a file chooser dialog for the output filename
+	// return: a filename
+	private void specifyDestFileName() {
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		myFileChooser.setFiletype(myFileChooser.ALL, false);
+		int approve = myFileChooser.showSaveDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			destFileName = myFileChooser.getSelectedFile().toString();
+			// remove any extension
+			int index = destFileName.lastIndexOf('.');
+			if(index != -1) destFileName = destFileName.substring(0, index);
+		} else {
+			System.out.println("No destination file specified.");
+			destFileName = null;
+		}
+	}
+	
+	// main function
+	private void run() {
+		initDlg();
+		int proceed = myDlg.display();
+		if (proceed == myDlg.EXECUTE_OPTION) {
+			initVariables();
+			System.out.println("Select the directories that you want to process.");
+			selectInputDirectories();
+			if (directories != null) {
+				System.out.println("Specify a file name for the output data.");
+				specifyDestFileName();
+				if (destFileName != null) {
+					java.text.DecimalFormat df = 
+						jpiv2.FileHandling.getCounterFormat(directories.length);
+					for(int d=0; d<directories.length; d++) {
+						switch (operation) {
+							case PIV_EVALUATION: {
+								jpiv.getSettings().setPivUseDefaultDestFileName(true);
+								jpiv.getSettings().setPivDefaultDestFileName(destFileName + df.format(d));
+								batchPivProcessing(directories[d].toString());
+								jpiv.getSettings().setPivUseDefaultDestFileName(false);
+								break;
+							}
+							case EMPTY: {
+								System.out.println("Empty operation. Nothing implemented yet.");
+							}
+						}
+					}
+					System.out.println("Finished operation!");
+				} else {
+					System.out.println("No destination filename specified.");
+				}
+			} else {
+				System.out.println("No directories selected.");
+			}
+		} else {
+			System.out.println("Cancelled.");
+		}
+	}
+	
+	return this;
+}
+
+// start processDirectory in background and clean up variables
+processDirectory = processDirectory();
+new Thread( processDirectory ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();
+

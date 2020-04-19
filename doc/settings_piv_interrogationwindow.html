@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV manual</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV manual">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV manual">
+		<meta name="DC.Date" content="2007-02-07">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/settings_piv_interrogationwindow.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Settings - PIV - Interrogation Window</h2>
+			<p align="center">
+                        <img src="fig/settings_interrogationwindow.jpg" alt="settings-panel: PIV - Interrogation Windwo."><br><br>
+			<i>settings-panel: PIV - Interrogation Window.</i>
+                        </p>
+			<p>
+<b>Multi pass</b><br>
+Specify the number of passes. The result of ervery pass is used to preshift the interrogation windows during the next pass. Two final passes with the same interrogation window sizes are always useful. In this way, the interrogation windows overlap optimally in the last pass, the correlation result will be enhanced if compared to the first pass. Use successively smaller windows to cope with large displacements.<br>
+<b>Interrogation window width</b><br>
+The horizontal size of the interrogation windows in pixel for each pass, respectively.<br>
+<b>Interrogation window height</b><br>
+The vertical interrogation window size.<br>
+<b>Search domain width/heigh</b><br>
+Only correlation peaks inside this area are accepted.<br>
+<b>Horizontal/Vertical vector spacing</b><br>
+The distance between the vectors.<br>
+<br>
+<b>Region of interst (ROI)</b><br>
+Select this box to constrict the PIV evaluation to a portion of the image. Specify the upper left and the lower right corners of the region of interest in the text fields below.<br>
+<br>
+<b>Horizontal/Vertical pre-shift (first pass)</b><br>
+A constant pre-shift of the interrogation windows can be specified for the first pass. This is useful, if there is a uniform flow direction. Individual pre-shifts for following passes are taken from the previous passes, respectively.<br>
+<br>
+<b>Between passes:</b><br>
+Select some vector post processing routines to eliminate outliers in the pre-shift files. <b>Normalized median test</b> marks vectors as invalid using the normalized median test proposed by Jerry Westerweel and Fulvio Scarano (Experiments in Fluids (2005) 39: 1096-1100). The velocity data remains unchanged, but the value in the fifth column (generally the peak height) is set to -1. Parameters are set on the JPIV - Vector Processing - Normalized Median Test panel. All vector processing functions expect selected files in the &quot;Files&quot; frame. <b>Replace invalid vectors by median</b> replaces invalid vectors by the median of their eight surrounding vectors. A vector is considered to be invalid if its fifth column is negative or null. <b>3x3 median filter</b> replaces every vector by the median of its surrounding vectors inclusive itself. <b>3x3 smoothing</b> replaces every vector by the average of its surrounding vectors inclusive itself.<br>
+<br>
+<b>Deform (shear) interrogation windows</b><br>
+Simple shearing of interrogation windows using affine transformation. Only enhances evaluation accuracy of heavily sheared velocity fields.<br>
+<br>
+<b>Export correlation functions</b><br>
+Select this check box, if you want to export some sample correlation functions as 32 bit tif files. The image files are automatically saved in the same directory as the corresponding vector files.<br>
+<b>Vector (zero from upper left corner, -1 for all)</b><br>
+Specify the correlation map you want to export. The correlation maps are counted from left to right and from top to bottom, starting with zero for the first vector in the upper left corner. Fill in -1, if you want to export the correlation maps of all vectors.<br>
+<b>Pass (starting with zero, -1 for all)</b><br>
+If you want to export the correlation maps of all evaluation passes, fill in -1. If you want to export only the correlation functions of a specific pass, specify the number of the pass here, starting with zero for the first one.<br>
+<b>Only Sum Of Correlation</b><br>
+Export only after all correlations are summed up.<br>
+Refer to <a class="cont" href="howto.html#saveCorrelationFunction">the how to page</a> for an example.<br>
+<br>
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

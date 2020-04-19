@@ -1,0 +1,52 @@
+body		{ 
+		background-color:#FFFFFF; 
+		font-family:sans-serif; 
+		font-size:large;
+		}
+#navi 		{
+		position:fixed;
+		top:2%;
+		left:2%;
+		width:20%;
+		height:96%;
+		padding-top:20px;
+		padding-left:2%;
+		background-color:#C0C0C0;
+		color:#000000;
+		font-weight:bold;
+		}
+#cont 		{
+		position:absolute;
+		top:2%;
+		left:24%;
+		width:74%;
+		height:96%;
+		padding-left:2%;
+		background-color:#FFFFFF;
+		color:#000000;
+		}
+.centered	{
+		text-align:center;
+		}
+img 		{ border:none }
+.fig		{
+		position:relative;
+		width:160px;
+		float:left;
+		font-style:italic;
+		}
+a.navi:link 	{ text-decoration:none; background-color:transparent; color:#000000; }
+a.navi:visited	{ text-decoration:none; background-color:transparent; color:#000000; }
+a.navi:hover 	{ text-decoration:none; background-color:#8080C0; color:#000000; }
+a.navi:active 	{ text-decoration:none; background-color:#8080C0; color:#000000; }
+a.navi:focus 	{ text-decoration:none; background-color:#8080C0; color:#000000; }
+a.navin:link 	{ text-decoration:none; background-color:transparent; color:#DF0101; }
+a.navin:visited	{ text-decoration:none; background-color:transparent; color:#000000; }
+a.navin:hover 	{ text-decoration:none; background-color:#8080C0; color:#DF0101; }
+a.navin:active 	{ text-decoration:none; background-color:#8080C0; color:#DF0101; }
+a.navin:focus 	{ text-decoration:none; background-color:#8080C0; color:#DF0101; }
+a.cont:link 	{ text-decoration:underline; background-color:transparent; color:#000000; }
+a.cont:visited	{ text-decoration:underline; background-color:transparent; color:#000000; }
+a.cont:hover 	{ text-decoration:underline; background-color:#8080C0; color:#000000; }
+a.cont:active 	{ text-decoration:underline; background-color:#8080C0; color:#000000; }
+a.cont:focus 	{ text-decoration:underline; background-color:#8080C0; color:#000000; }

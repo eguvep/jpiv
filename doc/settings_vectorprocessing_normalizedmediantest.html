@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV manual</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV manual">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV manual">
+		<meta name="DC.Date" content="2007-02-07">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/settings_vectorprocessing_normalizedmediantest.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Settings - Vector Processing - Normalized Median Test</h2>
+			<p align="center">
+                        <img src="fig/settings_normalizedmediantest.jpg" alt="settings-panel: Vector Processing - Normalized Median Test."><br><br>
+			<i>settings-panel: Vector Processing - Normalized Median Test.</i>
+                        </p>
+			<p>
+<b>Normalized Median Test</b><br>
+These are the settings for the normalized median test proposed by Jerry Westerweel and Fulvio Scarano (Experiments in Fluids (2005) 39: 1096-1100).<br>
+For the i=1,...,8 neighbouring vectors of the vector in question, i=0, consider the eight residual values r<small><sub>i</small></sub>=|d<small><sub>i</small></sub>-d<small><sub>m</small></sub>|. d<small><sub>i</small></sub> is the displacement of the eight neighbouring vectors in one direction, and d<small><sub>m</small></sub> is the median of those displacements. The median r<small><sub>m</small></sub> of the eight residuals r<small><sub>i</small></sub> is used to normalize the residual of the displacement in question, r<small><sub>0</small></sub>=(d<small><sub>0</small></sub>-d<small><sub>m</small></sub>)/r<small><sub>m</small></sub>.<br>
+The threshold for the normalized residual, r<small><sub>0</small></sub> can be set in the first text field. All vectors that have a larger residual in one or the other direction than specified are invalidated. This does not mean to change the displacement data, but to set the flag in the fifth column to -1.<br>
+The noise level (next text field) basically prevents a division by zero, if the median of the residuals, rm, happens to be zero. This value is added to rm before the division. In the above mentioned publication, 2.0 for the threshold, and 0.1 for the noise level are recommended, universal values to start with.<br> 
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

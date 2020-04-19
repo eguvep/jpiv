@@ -1,0 +1,92 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+// global variables
+jpiv2.ScriptDlg myDlg;
+
+// initialize a graphical user dialog
+private void initDlg() {
+	myDlg = new jpiv2.ScriptDlg(jpiv,
+		"Profile Extraction",
+		"mail@vennemann-online.de");
+	myDlg.setDate("June 2006");
+	myDlg.setOs("independent");
+	myDlg.setDependencies("none");
+	myDlg.setComment("Interpolates a profile between two points and writes the result to the standard output stream." +
+			 "Select multiple files for batch processing.");
+	myDlg.addVariable("x0", "50", "horizontal coordinate of first point");
+	myDlg.addVariable("y0", "400", "vertical coordinate of first point");
+	myDlg.addVariable("x1", "462", "horizontal coordinate of second point");
+	myDlg.addVariable("y1", "400", "vertical coordinate of second point");
+	myDlg.addVariable("spacing", "0", "number of pixels between two points along a profile (0 = auto)");
+	myDlg.addVariable("number", "1", "total number of parallel profiles");
+	myDlg.addVariable("distance", "16", "distance between parallel profiles");
+}
+
+// print profile data to the standard output stream
+private void printProfile(double[][][] theProfile) {
+	for(int p=0; p<theProfile.length; p++) {
+		System.out.println("profile data");
+		if (p==theProfile.length-1) System.out.println("(average of previous profiles)");
+		System.out.println("x [pixel]\ty [pixel]\tdx [pixel]\tdy [pixel]\t");
+		java.text.DecimalFormat df = new java.text.DecimalFormat("+0.0000E00;-0.0000E00");
+		for(int i=0; i<theProfile[0].length; i++) {
+			System.out.println(
+			df.format(theProfile[p][i][0]) + "\t" + 
+			df.format(theProfile[p][i][1]) + "\t" + 
+			df.format(theProfile[p][i][2]) + "\t" + 
+			df.format(theProfile[p][i][3]) + "\t");
+		}
+	}
+}
+
+// main function
+private void getFreeProfiles() {
+	initDlg();
+	int proceed = myDlg.display();
+	if (proceed == myDlg.EXECUTE_OPTION) {
+		int x0 = myDlg.getAsInt("x0");
+		int y0 = myDlg.getAsInt("y0");
+		int x1 = myDlg.getAsInt("x1");
+		int y1 = myDlg.getAsInt("y1");
+		int spacing = myDlg.getAsInt("spacing");
+		int number = myDlg.getAsInt("number");
+		int distance = myDlg.getAsInt("distance");
+		String[] files = jpiv.getListFrame().getSelectedElements();
+		if (file == null) {
+			System.out.println("Select at least one vector data file.");
+		} else {
+			for(int f=0; f<files.length; f++){
+				System.out.println("file: " + files[f]);
+				jpiv2.PivData myData = new jpiv2.PivData(files[f]);
+				printProfile(myData.getFreeProfiles(x0,y0,x1,y1,spacing,number,distance));
+			}
+		}
+	} else {
+		System.out.println("cancelled");
+	}
+}
+
+// execute main function and free memory
+getFreeProfiles();
+jpiv.getCmdInterpreter().clearBshNamespace();
+
+
+
+

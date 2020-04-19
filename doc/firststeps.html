@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV first steps</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV first steps">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV first steps">
+		<meta name="DC.Date" content="2010-06-17">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/firststeps.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>First steps</h2>
+			<p>
+			Read this few paragraphs to get an idea of the input-output procedure.
+			</p>
+			<h3>General</h3>
+			<p>
+			The program is launched by clicking on the icon on the <a class="cont" href="download.html">download</a> page. If you use JPIV the first time, a settings file (jpiv_settings.ser) is created in your home directory. The main-frame of the program contains three sub-windows. The &quot;Settings&quot; window on the left side gives you concise access to all properties. The  &quot;Files&quot; window on the right maintains an interactive list of the image and vector files you are currently working with. The &quot;Cmd&quot; window is used for system output and scripting.
+			</p>
+                        <p>
+                        <img src="fig/mainframe_startup.jpg" alt="The user interface"><br><br>
+			<i>The user interface just after startup.</i>
+			</p>
+			<h3>A first PIV evaluation</h3>
+			<p>
+			The procedure for PIV image evaluation - and other operations - in general:<br>
+			1. Load some image file names into the &quot;Files&quot; frame.<br>
+			2. Modify the properties on the panels in the &quot;Settings&quot; frame.<br>
+			3. In the &quot;Files&quot; frame, select the files you want to process.<br>
+			4. Start the processing by selecting a command from the drop down menus.<br>
+			5. Display the result by double clicking on a filename in the &quot;Files&quot; window.
+			</p>
+			<p>
+			Example:
+			</p>
+			<p>
+			Use the <b>File-Choose</b> menu item or the corresponding toolbar icon to choose some image files. If you do not have PIV images at hand, you will find some on the <a class="cont" href="download.html">download</a> page.
+			</p>
+			<p>
+                        <img src="fig/choose_files.jpg" alt="choose files">
+			</p>
+			<p>
+			Expand the general parameters tab and edit the parameters according to your images.
+			</p>
+			<p>
+                        <img src="fig/general.jpg" alt="general parameters">
+			</p>
+			<p>
+			Edit the interrogation window parameters.
+			</p>
+			<p>
+                        <img src="fig/window.jpg" alt="interrogation window parameters">
+			</p>
+			<p>
+			Select the image files you want to process.
+			</p>
+			<p>
+                        <img src="fig/select_images.jpg" alt="select images">
+			</p>
+			<p>
+			From the <b>PIV</b> drop down menu, choose the command <b>run PIV image analysis</b> to start the image evaluation. You are asked about a file name for the result. When the evaluation is finished, the result vector files are appended to the file list.
+			</p>
+			<p>
+			Congratulations - you finished your first PIV evaluation! You can double click the result vector fields in the Files window, to get them visualized. Expand the Preferences - Vector Plot tab in the Settings window to edit the plotting parameters.
+			</p>
+			<p>
+			If you like, you can now start post processing your vector data. Select the result vector files, and apply the commands of the Vector drop down menue on them.
+			</p>
+			<p>
+			<img src="fig/select_vector_files.jpg" alt="select vector files">
+			</p>
+			<p>
+			This is the point, where you may want to add some additional functionality to JPIV, like scripts for batch processing, masking, synthetic image generation, joining and splitting images, directory processing, native libraries for reading <a class="cont" href="http://www.lavision.de">LaVision</a> IMX and IM7 image data, and offline documentation files. Just download <a class="cont" href="jpivlib.zip">the JPIV script library</a>, extract the files to your hard drive and tell JPIV where to find the unpacked directory, <a class="cont" href="settings_preferences_paths.html">as explained in the documentation section</a>. Restart JPIV to list the scripts of the jpivlib/jsc directory in the Scripts drop-down menu.
+			</p>
+			<p>
+Now, you can use a more convenient method for post processing. Select your raw PIV evaluation files. Choose the batch filtering script from the <b>Script</b> menu. Alternatively, you can apply the filters directly via the <b>Vector</b> drop down menu.
+			</p>
+			<p>
+                        <img src="fig/batch_vector_filtering_menu.jpg" alt="batch vector filtering menu item">
+			</p>
+			<p>
+			A dialog appears. Select the filters you want to apply and how often they should be repeated. Again, you are asked about a file name for the results.
+			</p>
+			<p>
+                        <img src="fig/batch_vector_filtering_dialog.jpg" alt="batch vector filtering dialog">
+			</p>
+			<p>
+			Analog to the operations above, select the filtered result files and apply the drop down command <b>Vector - normal vorticity</b> to calculate the vorticity. To show the vorticity as a background color plot, go to the tab JPIV - Preferences - Vector Plot in the settings frame. In the section 'Background color' mark the check box 'Color-coding'. Make sure that 'Data-column' is set to '4'. Finally, double click the latest result files to show them on screen.
+			</p>
+			<p>
+                        <img src="fig/vectors.jpg" alt="vector field">
+			</p>
+			<br>
+			<br>
+		</div>
+	</body>
+</html>

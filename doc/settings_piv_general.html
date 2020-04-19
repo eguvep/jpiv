@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV manual</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV manual">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV manual">
+		<meta name="DC.Date" content="2007-02-07">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/settings_piv_general.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Settings - PIV - General</h2>
+			<p align="center">
+                        <img src="fig/settings_general.jpg" alt="settings-panel: PIV - General."><br><br>
+			<i>settings-panel: PIV - General.</i>
+                        </p>
+			<p>
+<b>Two images per file</b><br>
+Select this option if your image files contain two frames. A two frame image is basically one image, where the upper half represents the first exposure and the lower half represents the second exposure of a PIV measurement.<br>
+<b>Pairs (1+2, 3+4, 5+6)</b><br>
+Use this option when you want to correlate consecutive pairs of images.<br>
+<b>Consecutive (1+2, 2+3, 3+4)</b><br>
+Use this option when you want to correlate the images of a time series with each other. Image one will be correlated with image two, image two with image three and so forth.<br>
+<b>Skip</b><br>
+For small particle displacements between successive exposures, it might enhance the accuracy of your evaluation, when images with a larger time inbetween are correlated with each other. If 0 is entered into the text field, this will be the same as the Consecutive option, when 1 is entered the first image will be correlated with the third one, the second one with the fourth one and so forth.<br>
+<b>Cascade</b><br>
+Usful for finding the right number of files to skip.<br>
+<br>
+<b>Sum up correlation functions (ensemble correlation)</b><br>
+If this option is not selected, each image pair (or double frame image) will result in one output file. If you have a series of files with constant flow, you might enhance the result by selecting this option. Prior to the peak serching, all correlation functions are added up then. In this way, noise will be suppressed efficiently. You will get one output file for the selected range of images. The difference to averaging vector fields is, that single outliers are not effecting the final result, because thir peak is suppressed due to the summing of the correlation functions.<br>
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

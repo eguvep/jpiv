@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV manual</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV manual">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV manual">
+		<meta name="DC.Date" content="2007-02-07">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/settings_vectorprocessing_profileextraction.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Settings - Vector Processing - Profile Extraction</h2>
+			<p align="center">
+                        <img src="fig/settings_profileextraction.jpg" alt="settings-panel: Vector Processing - Profile Extraction."><br><br>
+			<i>settings-panel: Vector Processing - Profile Extraction.</i>
+                        </p>
+			<p>
+A profile is velocity data that is interpolated along a line. To create a profile, display a velocity field by double clicking a link in the &quot;Files&quot; window. Display the context menu by right clicking somewhere on the vector plot. Select <b>draw profile line</b>. Set the first end point of your velocity profile with the left mouse button. Keep the button pressed and drag the mouse to draw a line. Release the mouse button to mark the end point of the profile. The velocity field is interpolated along the line.<br><br>
+<b>Print profile statistics</b><br>
+Select this option to print the coordinates and the length of the profile into the &quot;Cmd&quot; frame.<br>
+<b>Print profile data</b><br>
+Prints the interpolated data into the &quot;Cmd&quot; frame, when selected.<br>
+<br>
+<b>Smooth profile display (quadratic Bezier spline)</b><br>
+Instead of drawing a straight line from point to point, uses a parabolic fit for nicer display.<br>
+<br>
+<b>Average over a number of parallel profiles</b><br>
+If the print profile data is also selected, the data of a number of parallel profiles and the data of the average profile will be plotted to the &quot;Cmd&quot; frame. Use the next two text fields to specify the number and distance of the profiles.<br>
+<br>
+<b>Fixed number of data points</b><br>
+The distance of the datapoints along the profile line is determined by the grid density and the direction of the profile. Profiles of different length will have a different number of nodes and are therefore difficult to compare. To get always the same number of nodes, you can select this option and specify the number of nodes in the text field.<br>
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

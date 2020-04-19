@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>JPIV introduction</title>
+		<link rel="stylesheet" type="text/css" href="format.css">
+		<link rel="shortcut icon" href="favicon.ico">
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<meta name="DC.Title" content="JPIV introduction">
+		<meta name="DC.Creator" content="Peter Vennemann">
+		<meta name="DC.Subject" content="JPIV introduction">
+		<meta name="DC.Date" content="2009-05-02">
+		<meta name="DC.Format" content="text/html">
+		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/introduction.html">
+		<meta name="DC.Language" content="en">
+		<meta name="DC.Rights" content="The author keeps all rights.">
+	</head>
+	<body>
+		<div id="navi">
+			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
+			<a class="navi" href="index.html">home</a><br>
+			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="introduction.html">introduction</a><br>
+			<a class="navi" href="firststeps.html">guide</a><br>
+			<a class="navi" href="howto.html">how to ...</a><br>
+			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="scripting.html">scripting</a><br>
+			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
+			<a class="navi" href="doc/index.html">javadoc</a><br>
+			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<br>
+			<br>
+		</div>
+		<div id="cont">
+			<h2>Introduction</h2>
+			<p>
+			You never heard of Particle Image Velocimetry (PIV) before, but want to get some hands-on experience? Yes, you can - after reading this most simple introduction. Just skip it, when you know PIV.
+			</p>
+			<h3>What is PIV?</h3>
+			<p>
+			PIV is an optical technique for measuring the displacement of particle pattern. PIV ist mostly used for flow velocity measurements. In contrast to many other techniques, that measure the velocity of a single point, PIV provides information about the two dimensional velocity distribution, or more precise, about the distribution of two cartesian velocity components parallel to a measurement plane. There are specialized set-ups that measure three cartesian components in a plane (e.g. Stereo-PIV) or even three components in space (e.g. Tomographic PIV, Holographic PIV). Because it is an optical technique, the fluid flow is usually not disturbed by a measurement probe.
+			</p>
+			<h3>The most simple example</h3>
+			<p>
+			The movement of a gas or a liquid is visualized by adding small tracer particles to the flow. With a digital camera, the position of the particles is captured at least twice, with a little time lag between the images. A computer programm like JPIV is used for tracking the movement of the particles based on cross-correlation, and to visualize the result.
+			</p>
+			<p>
+			A simple desk-top experiment, that can easily be reproduced, is the visualization of the thin, foamy layer on a cup of coffee that had just been stirred. The series function of a digital compact camera is used to take two consecutive photos, as shown below.
+			</p>
+			<p align="center">
+                        <img src="fig/coffee.gif" alt="a cup of coffee"><br><br>
+			<i>Two consecutive images of a cup of coffee after stirring.</i>
+                        </p>
+			<p>
+			JPIV searches corresponding particle patterns (here: groups of bubbles) in both images, using cross-correlation. The position of two corresponding patterns in the images indicate the direction and the magnitude of the pattern displacement and can be represented by a small arrow. The result is shown in the next figure. Vectors indicate the direction of the movement, the color-coding and the vector-length represent the magnitude of the displacement. The blue overlay is an interpolated particle displacement profile.
+			</p>
+			<p align="center">
+                        <a href="fig/coffee.png">
+			  <img src="fig/coffee_preview.png" alt="PIV in a cup of coffee">
+			</a><br><br>
+			<i>PIV in a cup of coffee. Click on the image to see an enlargement.</i>
+                        </p>
+			<p>
+			The velocity profile immediately reveals the linear velocity distribution in the center (solid body rotation), a fixed layer of foam along the rim of the mug, and a narrow band of strong shear between those regions. The arrows within the shear region also show that there is an outward migration of bubbles in this area.
+			</p>
+			<p>
+			You got the point - now we can start complaining, why this is rather a sloppy visualization and not a real PIV measurement:
+			</p>
+			<ul>
+<li>Due to perspective abberations, the displacement varies in circumferential direction. The measurement plane and the image plane of the camera should always be parallel.</li>
+<li>The foam shows an interesting behaviour, but the flow underneath behaves differently. Suitable tracer particles do not disturb the flow like the foam. Tracer particles should be smaller, and should not interact with surfaces. Usually it is a plane inside the flow that should be measured. Therefore, tracer particles must be neutrally buoyant.</li>
+<li>In the example, just displacements are given, no velocities. To convert the displacements into velocities (e.g. in m/s) the displacement must be multiplied by the magnification (e.g. in m/pixel) and devided by the time between the two images (e.g. in s).</li>
+<li>Ambient light, or volume illumination, is not suitable for measurements at a defined position, or measurement plane, in the flow. Usually only a thin, almost two-dimensional layer of the flow is illuminated. Particles outside this sheet remain dark. Lasers are used for creating such a light sheet. In microscopic applications, the strongly limited depth of focus of the utilized optics is used for defining a thin measurement plane.</li>
+<li>Bright lasers with very short flashes are used to avoid motion blur of fast moving particles.</li>
+			</ul>
+			<p>
+			It is discouraging, but there are a few more issues to be aware of. I recommend the following literature to get an overview:
+			</p>
+			<ul>
+<li>M Raffel, C Willert, and J Kompenhans; Particle image velocimetry: A practical guide; Springer, 1998</li>
+<li>J Westerweel; Digital particle image velocimetry: theory and application; Delft University Press, 1993 <a class="cont" href="http://repository.tudelft.nl/assets/uuid:85455914-6629-4421-8c77-27cc44e771ed/3me_westerweel_19930625.PDF">download pdf-file from TU-Delft repository</a></li>
+			</ul>
+			<h3>Another simple example</h3>
+			<p align="center">
+			<img src="fig/sandpile.gif" alt="sandpile avalanche"><br><br>
+			<i>This little beach-avalanche was evaluated using two evaluation passes, a constant evaluation window size of 32 pixel and a vector spacing of 8 pixel.</i>
+			</p>
+			<p align="center">
+			<img src="fig/sandpileRaw.png" alt="raw PIV visualization of a sandpile avalanche">
+			</a><br><br>
+			<i>This is the raw PIV visualization result. Between the two evaluation passes, invalid vectors had been identified by a normalized median test, and replaced by the median. Additionally, a 3 by 3 pixel median test and smoothing was applied between the two evalutation passes.</i>
+			</p>
+			</p>
+			<p align="center">
+			<img src="fig/sandpileFiltered.png" alt="filtered PIV visualization of a sandpile avalanche">
+			</a><br><br>
+			<i>In a last step, a normalized median test was applied. Isolated vectors were removed, and finally, a 3 by 3 pixel median filter was applied.</i>
+			</p>
+			<h3>A more serious example</h3>
+			</p>
+			<p align="center">
+			<a href="fig/ery.png">
+			<img src="fig/ery_preview.png" alt="PIV measurement of blood flow">
+			</a><br><br>
+			<i>PIV measurement of erythrocytes moving through the vitteline vessels of a chicken embryo. Check out <a class="cont" href="http://content.karger.com/ProdukteDB/produkte.asp?doi=10.1159/000109077">J Vasc Res 2008;45:54-68</a> for more information.</i>
+			</p>
+			<h3>More examples</h3>
+			</p>
+			Go to the <a class="cont" href="http://sourceforge.net/projects/jpiv/forums/forum/1839529">users and publications forum</a> for more examples. 
+			</p>
+			<h3>Now, find your own applications, there is always something that correlates...</h3>
+			<p align="center">
+			<img src="fig/bode.gif" alt="bubbles on the surface of the river bode"><br><br>
+			<i>Two consecutive images of the surface flow of a small river.</i>
+			</p>
+			<p align="center">
+			<a href="fig/bode.png">
+			<img src="fig/bode_pre.png" alt="PIV visualization of the surface flow of the river bode">
+			</a><br><br>
+			<i>PIV visualization of the surface.</i>
+			</p>
+			<br>
+		</div>
+	</body>
+</html>

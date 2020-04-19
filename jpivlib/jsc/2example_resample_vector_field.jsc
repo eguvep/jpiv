@@ -1,0 +1,175 @@
+/** Resample Vector Field
+*
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*
+* This script is an advanced example about how to integrate own code into jpiv.
+*
+* This example demonstrates how to:
+* - configure a graphical dialog to interact with the user
+* - get variables from this dialog
+* - get variables from a running jpiv instance
+* - display a file chooser dialog
+* - manipulate variables of a running jpiv instance
+* - execute a shell-command that calls matlab to process a matlab function
+* If you put a file into the ./jlib/jsc/ directory (like this file), a link 
+* to that file will be displayed as a menu item in the 'Script' drop down menu
+* of the main jpiv frame (restart to update the links).
+*/
+
+// Use the jpiv2.ScriptDlg class to create a dialog for user input.
+// The first parameter is the parent frame, the second the title of this 
+// script and the third one the name of the author. 
+// (Strictly speaking, you do not know the name of the parent component, because
+// you did not create it. To keep things simple, the command interpreter holds a
+// reference to the parent component. This reference is called 'jpiv' per definition.
+// The type of 'jpiv' is java2.JPiv. This class provides some get...() methods to 
+// get references to other program components. This is particularly useful to access
+// virtually all variables and methods of the running program. Examples are given 
+// further below.)
+jpiv2.ScriptDlg myDlg = new jpiv2.ScriptDlg(jpiv,
+	"Resample Vector Field",
+	"mail@vennemann-online.de");
+
+// Use the set...() methods of the jpiv2.ScriptDlg class to add some information that 
+// will be displayed in the dialog. (Use '+' to concatenate strings.)
+myDlg.setDate("February 2005");
+myDlg.setOs("Linux");
+myDlg.setDependencies("Matlab, bash");
+myDlg.setComment(
+	"Rotates and resamples a vector field on a regular grid. " +
+	"The vector field should contain five columns (x, y, u, v, s). " +
+	"Select the file you want to resample, in the filelist frame " +
+	"before calling this script.");
+
+// Add your specific variable names, default values and descriptions.
+// The values of this variables can later be manipulated in the dialog.
+myDlg.addVariable("matlab", "/usr/local/matlab61/bin/matlab", "use this matlab binary");
+myDlg.addVariable("phi", "0.0", "rotation angle in radians, counterclockwise positive");
+myDlg.addVariable("x0", "64", "horizontal start position of regular grid");
+myDlg.addVariable("y0", "16", "vertical start position of regular grid");
+myDlg.addVariable("dx", "64", "horizontal increment");
+myDlg.addVariable("dy", "16", "vertical increment");
+myDlg.addVariable("nx", "10", "horizontal number of grid points");
+myDlg.addVariable("ny", "20", "vertical number of grid points");
+
+// Now the dialog is finished. We just need to display it on the screen and execute the
+// shell command. This code is put into a function. We can exit the function conveniently
+// by calling 'return' at several points. The function is declared here and executed in the
+// last line of this script.
+void showDialog() {
+	// The method 'display' will make the dialog visible.
+	// This method returns an integer constant, that indicates whether the user would 
+	// like to proceed or not. The constant is defined in the jpiv2.ScriptDlg class.
+	int proceed = myDlg.display();
+	
+	// The user pressed 'execute'.
+	if (proceed == myDlg.EXECUTE_OPTION) {
+		
+		// Use the get...() methods of your jpiv2.ScriptDlg to get the actual 
+		// variable values. Because we just want do pass the variables further to 
+		// matlab, we get them all as strings (and not as double values or integers).
+		String matlab = myDlg.getAsString("matlab");
+		String phi = myDlg.getAsString("phi");
+		String x0 = myDlg.getAsString("x0");
+		String y0 = myDlg.getAsString("y0");
+		String dx = myDlg.getAsString("dx");
+		String dy = myDlg.getAsString("dy");
+		String nx = myDlg.getAsString("nx");
+		String ny = myDlg.getAsString("ny");
+		
+		// Get the source file from the file list of the running jpiv application.
+		// First use the 'getListFrame()' method of jpiv to get a reference to the
+		// filelist frame. Call the 'getSelecteElement()' method of this frame to 
+		// get the selected filename. The method returns 'null' if nothing is selected.
+		String sourcePath = jpiv.getListFrame().getSelectedElement();
+		
+		// In case the user did not select anything.
+		if(sourcePath == null) {
+			System.out.println("Please select a vector file first.");
+			return;
+		}
+		
+		// Display a file chooser dialog to determine the destination file.
+		// In this case an already existing instance of a file chooser is
+		// requested from the main program.
+		String destPath;
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		// Show only files that have the filename extension 'jvc',
+		// set 'select multiple files' to 'false'.
+		myFileChooser.setFiletype(myFileChooser.JVC, false);
+		int approve = myFileChooser.showSaveDialog(jpiv);
+		// Display the dialog and exit if the user pressed 'cancel'.
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			destPath = myFileChooser.getSelectedFile().toString();
+		} else {
+			System.out.println("No destination file specified.");
+			return;
+		}
+		// fix the file extension
+		if (destPath.lastIndexOf('.') != -1) {
+			destPath = destPath.substring(0, destPath.lastIndexOf('.'));
+		}
+		destPath += ".jvc";
+		// Assemble the directory name of the matlab files. 
+		// The class jpiv2.FileHandling provides some static methods   
+		// to get the directory name of the jpiv library for matlab files
+		// and the operating system dependent fileSeparator ('/' or '\').
+		String fileSep = jpiv2.FileHandling.getFileSeparator();
+		String myMDir = jpiv.getSettings().jpivLibPath + fileSep + 
+			"matlab" + fileSep;
+				 
+		// Create a reference to the running command interpreter.
+		jpiv2.CmdInterpreter ci = jpiv.getCmdInterpreter();
+		
+		// Create the command line.
+		String[] cmd = {matlab + " -nosplash -nodisplay -r \"" +
+				"addpath('" + myMDir + "');" +
+				"resampleVectorField( " +
+				"'" + sourcePath + "', " +
+				"'" + destPath + "', " +
+				phi + ", " +
+				x0 + ", " +
+				y0 + ", " +
+				dx + ", " +
+				dy + ", " +
+				nx + ", " +
+				ny + ");exit;\""};
+		
+		// Execute the shell command.
+		System.out.println(cmd[0]);
+		ci.execute(cmd, ci.TYPE_SHELLCOMMAND);
+		
+		// Finally, add a link to the destination file to filelist.
+		jpiv.getListFrame().appendElement(destPath);
+		
+		System.out.println("finished");
+		return;
+	
+	// The user pressed 'quit'.
+	} else {
+		System.out.println("cancelled");
+		return;
+	}
+}
+
+// execute the method definition above
+showDialog();
+
+// free memory
+jpiv.getCmdInterpreter().clearBshNamespace();
+

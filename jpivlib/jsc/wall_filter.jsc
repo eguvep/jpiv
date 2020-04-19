@@ -1,0 +1,110 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+wallFilter() {
+
+	// global variables
+	jpiv2.ScriptDlg myDlg;
+	int xStart;
+	int yStart;
+	double threshold; 
+
+	// initialize graphical user dialog
+	private void initDlg() {
+		myDlg = new jpiv2.ScriptDlg(jpiv,
+			"Wall Filter Vertical",
+			"mail@vennemann-online.de");
+		myDlg.setDate("March 2007");
+		myDlg.setOs("independent");
+		myDlg.setDependencies("none");
+		myDlg.setComment(
+			"Applies <code>jpiv2.PivData.wallFilterVertical(int xStart, int yStart, double threshold)</code> " +
+			"to the selected files. See the code documentation for more information.");
+		myDlg.addVariable("xStart", "5", "vertical starting point of the filter");
+		myDlg.addVariable("yStart", "15", "vertical starting point of the filter");
+		myDlg.addVariable("threshold","1.5", "consider velocities below this threshold to be in the wall vicinity");
+	}
+	
+	// initialize variables
+	private void initVariables() {
+		xStart = myDlg.getAsInt("xStart");
+		yStart = myDlg.getAsInt("yStart");
+		threshold = myDlg.getAsDouble("threshold");
+	}
+	
+	// filtering
+	// pivData: the PivData object to filter
+	// return: the PivData object after filtering it
+	private jpiv2.PivData filter(jpiv2.PivData pivData) {
+		pivData.wallFilterVertical(xStart, yStart, threshold);
+		return ( pivData );
+	}
+	
+	// show a file chooser dialog for the output filename
+	// return: a filename
+	private String showFileChooser() {
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		myFileChooser.setFiletype(myFileChooser.ALL, false);
+		int approve = myFileChooser.showSaveDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			String pathname = myFileChooser.getSelectedFile().toString();
+			// remove any extension
+			int index = pathname.lastIndexOf('.');
+			if(index != -1) pathname = pathname.substring(0, index);
+			return(pathname);
+		} else {
+			System.out.println("No destination file specified.");
+			return(null);
+		}
+	}
+	
+	// main function
+	private void run() {
+		initDlg();
+		int proceed = myDlg.display();
+		if (proceed == myDlg.EXECUTE_OPTION) {
+			initVariables();
+			String destPath = showFileChooser();
+			if (destPath != null) {
+				String[] files = jpiv.getListFrame().getSelectedElements();
+				if ( files == null) {
+					System.out.println("Select at least one vector file.");
+				} else {
+					java.text.DecimalFormat df = 
+					jpiv2.FileHandling.getCounterFormat(files.length);
+					for(int f=0; f<files.length; f++) {
+						filter(new jpiv2.PivData(files[f])).writeDataToFile(destPath + df.format(f) + ".jvc", true);
+						jpiv.getListFrame().appendElement(destPath + df.format(f) + ".jvc");
+					}
+				}
+			}
+		}
+		else {
+			System.out.println("cancelled.");
+		}
+	}
+	
+	return this;
+}
+
+// start batch filter process in background and clean up variables
+wallFilter = wallFilter();
+new Thread( wallFilter ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();
+
