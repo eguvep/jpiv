@@ -24,7 +24,7 @@ JPIV is a complete and open source software package for 2D [Particle Image Veloc
 
 Prerequisite: A Java Runtime Environment (JRE).
 
-1. Download the [zip-archive](./jpiv.zip).
+1. Download the [zip-archive](https://github.com/eguvep/jpiv/raw/master/jpiv.zip).
 2. Extract it to your hard disc.
 3. Open a terminal and `cd` into the new directory.
 4. Execute `java -jar JPIV.jar`.
