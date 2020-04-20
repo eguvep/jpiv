@@ -10,7 +10,6 @@
 		<meta name="DC.Subject" content="JPIV Documentation">
 		<meta name="DC.Date" content="2020-04-20">
 		<meta name="DC.Format" content="text/html">
-		<meta name="DC.Identifier" content="https://eguvep.github.io/jpiv/index.html">
 		<meta name="DC.Language" content="en">
 	</head>
 	<body>
@@ -57,14 +56,41 @@
 			<p>
                         <img src="fig/mainframe.jpg" alt="JPIV user interface"><br>
 			</p>
+			<h2>Running JPIV</h2>
 			<p>
-			You have full access to the <a class="cont" href="javadoc/index.html">well documented</a> <a class="cont" href="https://github.com/eguvep/jpiv">source code</a>. Contributions are welcome!
+			  Prerequisite: A Java Runtime Environment (JRE).
+			  <ol>
+			    <li>Download the <a class="cont" href="../jpiv.zip">zip-archive</a>.</li>
+                            <li>Extract it to your hard disc.</li>
+                            <li>Open a terminal and cd into the new directory.</li>
+                            <li>Execute <code>java -jar JPIV.jar</code>.</li>
+			  </ol>
 			</p>
 			<p>
-			You have full access to the core classes and methods of JPIV via simple scripts. Scripting also enables you to integrate your Matlab, Perl, or Python scripts, as well as any other command line tool. Have a look at the <a class="cont" href="scripting.html">scripting intro</a> for more information.
+			  If you experience an out of memory error or poor performance, increase the avalable memory: To allow up to four gigabytes, type <code>java -jar -Xmx4G JPIV.jar</code>
 			</p>
+			<h2>Using JPIV</h2>
 			<p>
-			I developed JPIV in the scope of the work on my <a class="cont" href="http://resolver.tudelft.nl/uuid:28a0bbb8-e671-4806-ba52-cca2e6db0d50">PhD thesis</a> about micro-scale blood flow measurements. Since 2004, JPIV is in use for research and education and constantly maintained. In 2020, a collaboration with the <a class="cont" href="https://github.com/OpenPIV/">OpenPIV</a> project has started. As a first step, <a class="cont" href="https://github.com/OpenPIV/openpiv_tk_gui">a simple GUI</a> with a workflow, comparable to that of JPIV has been introduced.
+			  Prerequisite: A Java Runtime Environment (JRE).
+			  <ul>
+			    <li><a class="navi" href="https://eguvep.github.io/jpiv/introduction.html">Introduction to PIV for Novices.</a></li>
+                            <li><a class="navi" href="https://eguvep.github.io/jpiv/firststeps.html">Quick Start Guide to JPIV for Beginners.</a></li>
+                            <li><a class="navi" href="https://eguvep.github.io/jpiv/howto.html">HOWTO for Expert Users.</a></li>
+                            <li><a class="navi" href="https://eguvep.github.io/jpiv/settings.html">JPIV Parameter Reference.</a></li>
+                            <li><a class="navi" href="https://eguvep.github.io/jpiv/downloads.html">Test Images.</a></li>
+			  </ul>
+			</p>
+			<h2>Extending JPIV</h2>
+			<p>
+			  Prerequisite: A Java Runtime Environment (JRE).
+			  <ul>
+			    <li><a class="navi" href="https://eguvep.github.io/jpiv/scripting.html">User Script Coding Intro.</a></li>
+                            <li><a class="navi" href="https://eguvep.github.io/jpiv/javadoc/">JPIV Code Documentation.</a></li>
+			  </ul>
+			</p>
+			<h2>Trivia</h2>
+			<p>
+			I developed JPIV in the scope of the work on my <a class="cont" href="http://resolver.tudelft.nl/uuid:28a0bbb8-e671-4806-ba52-cca2e6db0d50">PhD thesis</a> about micro-scale blood flow measurements. Since 2004, JPIV is in use for research and education and constantly maintained. In 2020, a collaboration with the <a class="cont" href="https://github.com/OpenPIV/">OpenPIV</a> project has started. As a first step, <a class="cont" href="https://github.com/OpenPIV/openpiv_tk_gui">a simple GUI</a> has been introduced, with a workflow that resembles JPIV.
 			</p>
 			<p>
 			Other open source PIV projects:<br>
@@ -76,7 +102,7 @@
 			<a class="cont" href="http://sourceforge.net/projects/ppiv/">PPIV</a> (C++; build instructions for Linux-cluster)<br>
 			</p>
 			<p>
-			  Projects that solely rely on Matlab:<br>
+			  Projects that rely solely on Matlab:<br>
 			  <a class="cont" href="http://www.oceanwave.jp/softwares/mpiv/index.php">mpiv</a><br>
 			  <a class="cont" href="http://pivlab.blogspot.com/">PIVlab</a><br>
 			</p>

@@ -1,32 +1,28 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
 	<head>
-		<title>JPIV first steps</title>
+		<title>JPIV Documentation</title>
 		<link rel="stylesheet" type="text/css" href="format.css">
 		<link rel="shortcut icon" href="favicon.ico">
 		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-		<meta name="DC.Title" content="JPIV first steps">
+		<meta name="DC.Title" content="JPIV Documentation">
 		<meta name="DC.Creator" content="Peter Vennemann">
-		<meta name="DC.Subject" content="JPIV first steps">
-		<meta name="DC.Date" content="2010-06-17">
+		<meta name="DC.Subject" content="JPIV Documentation">
+		<meta name="DC.Date" content="2020-04-20">
 		<meta name="DC.Format" content="text/html">
-		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/firststeps.html">
 		<meta name="DC.Language" content="en">
-		<meta name="DC.Rights" content="The author keeps all rights.">
 	</head>
 	<body>
 		<div id="navi">
 			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
 			<a class="navi" href="index.html">home</a><br>
-			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="download.html">download</a><br>
 			<a class="navi" href="introduction.html">introduction</a><br>
-			<a class="navi" href="firststeps.html">guide</a><br>
-			<a class="navi" href="howto.html">how to ...</a><br>
-			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="firststeps.html">quick start</a><br>
+			<a class="navi" href="howto.html">how to</a><br>
+			<a class="navi" href="settings.html">reference</a><br>
 			<a class="navi" href="scripting.html">scripting</a><br>
-			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
-			<a class="navi" href="doc/index.html">javadoc</a><br>
-			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<a class="navi" href="javadoc/index.html">javadoc</a><br>
+			<a class="navi" href="https://github.com/eguvep/jpiv/">repository</a><br>
 			<br>
 			<br>
 		</div>
@@ -37,7 +33,7 @@
 			</p>
 			<h3>General</h3>
 			<p>
-			The program is launched by clicking on the icon on the <a class="cont" href="download.html">download</a> page. If you use JPIV the first time, a settings file (jpiv_settings.ser) is created in your home directory. The main-frame of the program contains three sub-windows. The &quot;Settings&quot; window on the left side gives you concise access to all properties. The  &quot;Files&quot; window on the right maintains an interactive list of the image and vector files you are currently working with. The &quot;Cmd&quot; window is used for system output and scripting.
+			The program is launched by executing <code>java -jar JPIV.jar</code>. If you use JPIV the first time, a settings file (jpiv_settings.ser) is created in your home directory. The main-frame of the program contains three sub-windows. The &quot;Settings&quot; window on the left side gives you concise access to all properties. The  &quot;Files&quot; window on the right maintains an interactive list of the image and vector files you are currently working with. The &quot;Cmd&quot; window is used for system output and scripting.
 			</p>
                         <p>
                         <img src="fig/mainframe_startup.jpg" alt="The user interface"><br><br>
@@ -92,7 +88,7 @@
 			<img src="fig/select_vector_files.jpg" alt="select vector files">
 			</p>
 			<p>
-			This is the point, where you may want to add some additional functionality to JPIV, like scripts for batch processing, masking, synthetic image generation, joining and splitting images, directory processing, native libraries for reading <a class="cont" href="http://www.lavision.de">LaVision</a> IMX and IM7 image data, and offline documentation files. Just download <a class="cont" href="jpivlib.zip">the JPIV script library</a>, extract the files to your hard drive and tell JPIV where to find the unpacked directory, <a class="cont" href="settings_preferences_paths.html">as explained in the documentation section</a>. Restart JPIV to list the scripts of the jpivlib/jsc directory in the Scripts drop-down menu.
+			This is the point, where you may want to add some additional functionality to JPIV, like scripts for batch processing, masking, synthetic image generation, joining and splitting images, directory processing, native libraries for reading <a class="cont" href="http://www.lavision.de">LaVision</a> IMX and IM7 image data, and so on. If the scripts do not show up as entries in the <b>Scripts</b> drop-down menue, make shure, that the path is set <a class="cont" href="settings_preferences_paths.html">as explained in the documentation section</a>. Restart JPIV to list the scripts of the ./jpivlib/jsc directory in the <b>Scripts</b> drop-down menu.
 			</p>
 			<p>
 Now, you can use a more convenient method for post processing. Select your raw PIV evaluation files. Choose the batch filtering script from the <b>Script</b> menu. Alternatively, you can apply the filters directly via the <b>Vector</b> drop down menu.
