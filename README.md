@@ -28,9 +28,12 @@ Prerequisite: A Java Runtime Environment (JRE).
 
 ## Using JPIV
 
-[Introduction for PIV Novices](https://github.com/eguvep/jpiv/doc/introduction.html)
-[Quick Start Guide for JPIV Beginners](https://github.com/eguvep/jpiv/doc/fiststeps.html)
-[HOWTO for Expert Users](https://github.com/eguvep/jpiv/doc/howto.html)
-[JPIV Parameter Reference](https://github.com/eguvep/jpiv/doc/settings.html)
-[User Script Coding Intro](https://github.com/eguvep/jpiv/doc/scripting.html)
+- [Introduction for PIV Novices](https://github.com/eguvep/jpiv/doc/introduction.html)
+- [Quick Start Guide for JPIV Beginners](https://github.com/eguvep/jpiv/doc/fiststeps.html)
+- [HOWTO for Expert Users](https://github.com/eguvep/jpiv/doc/howto.html)
+- [JPIV Parameter Reference](https://github.com/eguvep/jpiv/doc/settings.html)
 
+## Extending JPIV
+
+- [User Script Coding Intro](https://github.com/eguvep/jpiv/doc/scripting.html)
+- [JPIV Code Documentation](https://github.com/eguvep/jpiv/dist/doc/)
