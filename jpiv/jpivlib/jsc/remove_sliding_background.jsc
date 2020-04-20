@@ -1,0 +1,71 @@
+/**
+* Copyright 2018 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+removeSlidingBackground() {
+	
+	// main function
+	private void run() {
+		String[] files = jpiv.getListFrame().getSelectedElements();
+		if ( files == null || files.length < 3) {
+			System.out.println(
+				"Select at least three image files." );
+		} else {
+			String[] bg = new String[3];
+			for(int f=0; f<files.length; f=f+1) {
+				System.out.println(
+					"Process image " + 
+					files[f]);
+				// background images
+				if (f < files.length-2) {
+        			System.arraycopy(files, f, bg, 0, 3);
+				}
+				else if (f == files.length-2) {
+					System.arraycopy(files, f-1, bg, 0, 3);
+				}
+				else if (f == files.length-1) {
+					System.arraycopy(files, f-2, bg, 0, 3);
+				}
+				// process
+				jpiv2.PivImg img = new jpiv2.PivImg( 
+					jpiv, bg, jpiv2.PivImg.RM_SLIDING_BACKGRD );
+				// filename
+				String basename = 
+					files[f].substring(
+					0, 
+					files[f].lastIndexOf('.') );
+				// save
+				img.writePivImageToFile( 
+					"png", 
+					basename + "_rm_sliding_backgrd" );
+				// append to list
+				jpiv.getListFrame().appendElement( 
+					basename + "_rm_sliding_backgrd.png" );
+			}
+			System.out.println("Finished!");
+		}
+	}
+
+	return this;
+}
+
+// start process in background and clean up variables
+removeSlidingBackground = removeSlidingBackground();
+new Thread( removeSlidingBackground ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();
+

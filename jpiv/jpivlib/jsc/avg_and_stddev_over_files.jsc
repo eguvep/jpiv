@@ -1,0 +1,159 @@
+/**
+* Contributed by Rob in September 2010. Slightly modified by Peter.
+* 
+* This script assumes that vectors have been invalidated and averages and
+* standard deviations are based only on the remaining valid vectors in the file.
+* The first 'save' file dialog will ask where the 'averages' file is stored
+* and the second for the 'standard deviation' file. The fifth column of the 
+* output files is the number of valid vectors that were found at that location. 
+* 
+* See https://sourceforge.net/projects/jpiv/forums/forum/950409/topic/3836289
+* for details.
+*/ 
+
+pivDataStdDev() {
+
+	private double[][] avg; 
+	private double[][] stdDev; 
+	
+	// main function	
+	private void run() { 
+		String[] files = jpiv.getListFrame().getSelectedElements(); 
+		if(files == null) { 
+			System.out.println(
+				"No files selected. Nothing to do."); 
+		} else { 
+			System.out.println(
+				"Select name for average vector file.");
+			destPath = chooseDestPath(jpiv.FlexFileChooser.JVC);
+			System.out.println(
+				"Select name for standard deviation " +
+				"vector file."); 
+			destPath2 = chooseDestPath(jpiv.FlexFileChooser.JVC); 
+		} if(destPath != null && 
+			  destPath2 != null && 
+			  files != null) { 
+			System.out.println("Processing ..."); 
+			process(files); 
+			// saving the results 
+			int index = destPath.indexOf('.'); 
+			if(index != -1) {
+				destPath = destPath.substring(0, index);
+			} 
+			new jpiv2.PivData(avg).writeDataToFile(
+				destPath + ".jvc", 
+				jpiv.getSettings().loadSaveTecplotHeader); 
+			jpiv.getListFrame().appendElement(destPath + ".jvc"); 
+			int index = destPath2.indexOf('.'); 
+			if(index != -1) {
+				destPath2 = destPath2.substring(0, index);
+			} 
+			new jpiv2.PivData(stdDev).writeDataToFile(
+				destPath2 + ".jvc", 
+				jpiv.getSettings().loadSaveTecplotHeader); 
+			jpiv.getListFrame().appendElement(destPath2 + ".jvc"); 
+			System.out.println("done.");
+		}
+	} 
+
+	private process(String[] pathnames) { 
+		// Initialize PivData to hold the summation and average 
+		avg = new jpiv2.PivData(pathnames[0]).getPivData();
+		int length = avg.length;
+		for (int k = 0 ; k < length ; k++) { 
+			if (avg[k][4] > 0.0) { 
+				avg[k][4] = 1.0; // Increment valid vector count
+			} else { 
+				avg[k][4] = 0.0; // Set number to zero 
+				avg[k][2] = 0.0; // Set ux and uy to zero 
+				avg[k][3] = 0.0; 
+			} 
+		} 
+		// Add up values from each file
+		double[][] temp; 
+		for(int f=1; f<pathnames.length; f++) { 
+			temp = new jpiv2.PivData(pathnames[f]).getPivData(); 
+			for (int k = 0 ; k < length ; k++) { 
+				if (temp[k][4] > 0.0) {
+					// increment valid vector 
+					avg[k][4] += 1.0;  
+					// summation of velocities					
+					avg[k][2] += temp[k][2];  
+					// summation of velocities
+					avg[k][3] += temp[k][3];  
+				} 
+			} 
+		} 
+		// Divide each velocity summation by 
+		// number of valid vectors found 
+		for (int k = 0; k < length; ++k) { 
+			if (avg[k][4] < 1.0) { 
+				System.err.println(
+					"Divide by zero ERROR. " +
+					"No valid vectors at " + 
+					Double.toString(avg[k][0]) + " " + 
+					Double.toString(avg[k][1])); 
+			} else {
+				avg[k][2] /= avg[k][4]; 
+				avg[k][3] /= avg[k][4];
+			} 
+		} 
+		// Initialize standard deviation PivData and set to zero 
+		stdDev = new jpiv2.PivData(pathnames[0]).getPivData(); 
+		for (int k = 0 ; k < length ; k++) { 
+			stdDev[k][4] = avg[k][4]; 
+			stdDev[k][2] = 0.0; // Set ux and uy to zero 
+			stdDev[k][3] = 0.0; 
+		} // Add up the difference squared from each file 
+		for(int f=0; f<pathnames.length; f++) { 
+			temp = new jpiv2.PivData(pathnames[f]).getPivData(); 
+			for (int k = 0 ; k < length ; k++) { 
+				if (temp[k][4] > 0.0) { 
+					stdDev[k][2] += 
+						Math.pow( 
+						temp[k][2] - avg[k][2] , 2.0); 
+					// sum difference squared value 
+					stdDev[k][3] += 
+						Math.pow( 
+						temp[k][3] - avg[k][3] , 2.0); 
+					// sum difference squared value 
+				} 
+			} 
+		} 
+		// Complete standard deviation calculation on squared values 
+		for (int k = 0; k < length; ++k) { 
+			if (avg[k][4] < 2.0) { 
+				System.err.println("Divide by zero ERROR. " +
+				"Not enough samples at " + 
+					Double.toString(stdDev[k][0]) + " " + 
+					Double.toString(stdDev[k][1])); 
+			} else { 
+				stdDev[k][2] = Math.sqrt( 
+					stdDev[k][2] / ( avg[k][4] - 1.0 ) ); 
+				stdDev[k][3] = Math.sqrt( 
+					stdDev[k][3] / ( avg[k][4] - 1.0 ) );
+			} 
+		} 
+	} 
+
+	private String chooseDestPath(int type) { 
+		String pathname; 
+		jpiv2.FlexFileChooser 
+		flexFileChooser = jpiv.getFlexFileChooser(); 
+		flexFileChooser.setFiletype(type, false); 
+		int approve = flexFileChooser.showSaveDialog(jpiv); 
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) { 
+			pathname = flexFileChooser.getSelectedFile().toString(); 
+			return(pathname); 
+		} else return(null); 
+	}
+
+	return(this);
+
+} 
+
+// execute pivDataStdDev in background and free memory
+pivDataStdDev = pivDataStdDev();
+new Thread( pivDataStdDev ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();
+

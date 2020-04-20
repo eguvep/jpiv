@@ -1,0 +1,76 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+compareDataSets() {
+	
+	jpiv2.ScriptDlg myDlg;
+	
+	public void createDlg() {
+		myDlg = new jpiv2.ScriptDlg(
+			jpiv,
+			"Compare Data Sets",
+			"mail@vennemann-online.de");
+		myDlg.setDate("February 2007");
+		myDlg.setOs("independent");
+		myDlg.setDependencies("none");
+		myDlg.setComment(
+			"Compares each file of the second half of the selected " +
+			"data sets with the first half of the selected data sets. " + 
+			"The root mean square deviation of the third, forth and " +
+			"fifth column is printed to the standard output stream. " +
+			"Make sure, that each file contains the same number " +
+			"of nodes.");
+		myDlg.addVariable(
+			"includeBorder", "false", 
+			"Include border values? (true/false)");
+	}
+
+	public void run() {
+		createDlg();
+		int proceed = myDlg.display();
+		if (proceed == myDlg.EXECUTE_OPTION) {
+			String[] files = jpiv.getListFrame().getSelectedElements();
+			int l = files.length/2;
+			boolean includeBorder = myDlg.getAsBoolean("includeBorder");
+			System.out.println(
+				"\troot mean square deviation\n" +  
+				"\tdx\t\t\tdy\t\t\tflag");
+			for (int f=0; f<l; f++) {
+				System.out.print(f + "\t");
+				double[] stddev = jpiv2.Statistics.comparePivDataSets(
+					new jpiv2.PivData( files[f] ),
+					new jpiv2.PivData( files[f+l] ),
+					includeBorder);
+				System.out.println(
+					stddev[0] + "\t" +
+					stddev[1] + "\t" +
+					stddev[2] );
+			}
+		}
+		else {
+			System.out.println("cancelled");
+		}
+	}
+	
+	return this;
+}
+
+thisCompareDataSets = compareDataSets();
+new Thread( thisCompareDataSets ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();

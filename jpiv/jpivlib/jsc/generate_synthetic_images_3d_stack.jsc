@@ -1,0 +1,662 @@
+/**
+* Synthetic Image Generator.
+*
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+ syntheticImageGenerator() {
+	
+	/** variable declaration
+	*/
+	// number of particles
+	ucar.ma2.ArrayInt.D0 g_np;
+	// number of scan planes
+	ucar.ma2.ArrayInt.D0 g_nsp;
+	// distance between scan planes (unit: real)
+	ucar.ma2.ArrayDouble.D0 g_dsp;
+	// maximum displacement (unit: real)
+	ucar.ma2.ArrayDouble.D0 g_dp;
+	// flow domain width (fraction of particle space dimension)
+	ucar.ma2.ArrayDouble.D0 g_w;
+	// reference data files
+	ucar.ma2.ArrayInt.D0 r_x0;
+	ucar.ma2.ArrayInt.D0 r_y0;
+	ucar.ma2.ArrayInt.D0 r_dx;
+	ucar.ma2.ArrayInt.D0 r_dy;
+	ucar.ma2.ArrayInt.D0 r_nx;
+	ucar.ma2.ArrayInt.D0 r_ny;
+	// user dialog
+	jpiv2.ScriptDlg myDlg;
+	// configuration files
+	ucar.nc2.NetcdfFileWriteable config;
+	ucar.nc2.NetcdfFileWriteable config3dScanAdditions;
+	String configFileName;
+	String config3dScanAdditionsFileName;
+	// some system properties
+	String fileSeparator;
+	String userDirName;
+	String jlibDirName;
+	// image dimension
+	ucar.ma2.ArrayInt.D0 p_dimX;
+	ucar.ma2.ArrayInt.D0 p_dimY;
+	ucar.ma2.ArrayInt.D0 p_dimL;
+	ucar.ma2.ArrayInt.D0 p_dimR;
+	ucar.ma2.ArrayInt.D0 p_dimT;
+	ucar.ma2.ArrayInt.D0 p_dimB;
+	// particle space dimension
+	ucar.ma2.ArrayDouble.D0 r_xmin;
+	ucar.ma2.ArrayDouble.D0 r_xmax;
+	ucar.ma2.ArrayDouble.D0 r_ymin;
+	ucar.ma2.ArrayDouble.D0 r_ymax;
+	ucar.ma2.ArrayDouble.D0 r_zmin;
+	ucar.ma2.ArrayDouble.D0 r_zmax;
+	// light sheet information
+	ucar.ma2.ArrayChar.D1 lsheet_type;
+	ucar.ma2.ArrayDouble.D0 lsheet_rpos_z;
+	double initial_lsheet_rpos_z;
+	ucar.ma2.ArrayDouble.D0 lsheet_rthickness;
+	// particle size distribution
+	ucar.ma2.ArrayChar.D1 part_distribution;
+	ucar.ma2.ArrayDouble.D0 part_min_diam;
+	ucar.ma2.ArrayDouble.D0 part_max_diam;
+	ucar.ma2.ArrayDouble.D0 part_mean_diam;
+	ucar.ma2.ArrayDouble.D0 part_std_diam;
+	// pattern information
+	ucar.ma2.ArrayDouble.D0 pattern_meanx;
+	ucar.ma2.ArrayDouble.D0 pattern_meany;
+	// CCD information
+	ucar.ma2.ArrayDouble.D0 ccd_fill_ratio_x;
+	ucar.ma2.ArrayDouble.D0 ccd_fill_ratio_y;
+	ucar.ma2.ArrayDouble.D0 ccd_saturation_level;
+	ucar.ma2.ArrayChar.D1 ccd_background_type;
+	ucar.ma2.ArrayDouble.D0 ccd_background_mean_level;
+	ucar.ma2.ArrayDouble.D0 ccd_background_std_noise;
+	ucar.ma2.ArrayDouble.D0 ccd_pixel_horizontal_pitch;
+	ucar.ma2.ArrayDouble.D0 ccd_pixel_vertical_pitch;
+	// optic information
+	ucar.ma2.ArrayDouble.D0 optic_object_distance;
+	ucar.ma2.ArrayDouble.D0 optic_image_distance;
+	 
+	/** create a user dialog
+	*/
+	public void createDlg() {
+		myDlg = new jpiv2.ScriptDlg(
+			jpiv,
+			"Synthetic Image Generator (3D Scan)",
+			"mail@vennemann-online.de");
+		myDlg.setDate("February 2007");
+		myDlg.setOs("Linux");
+		myDlg.setDependencies("sig, SIGconf.nc");
+		myDlg.setComment(
+			"This PIV image generator relies on the EUROPIV II Project " +
+			"\"Synthetic Image Generator\" (SIG), Feb. 2001, by " + 
+			"Bertrand Lecordier: Bertrand.Lecordier@coria.fr, " +
+			"Jose Nogueira: goriba@ing.uc3m.es, and " +
+			"Jerry Westerweel: j.westerweel@wbmt.tudelft.nl. " +
+			"First, a particle laden volume is generated. " +
+			"Then images are created that represent parallel, illuminated " +
+			"sheets within this volume. The displacement pattern models " +
+			"a Poiseuille flow that crosses the scan planes at an angle. " +
+			"Additionally, reference vector data is generated. " +
+			"In order to customize the displacement pattern or the angle, " +
+			"please modify the code of this script.");
+	}
+	
+	/** read the SIG config file and initialize the user dialog
+	*/
+	public void initDlg() {
+		// check if file exists and open it
+		java.util.Properties sysProp = System.getProperties();
+		fileSeparator = sysProp.getProperty("file.separator");
+		userDirName = sysProp.getProperty("user.home");
+		jlibDirName = jpiv.getSettings().jpivLibPath;
+		configFileName = userDirName + fileSeparator + "SIGconf.nc";
+		config3dScanAdditionsFileName = userDirName + fileSeparator + "SIGconf_3d_scan_additions.nc";
+		java.io.File configFile = new java.io.File(configFileName);
+		java.io.File config3dScanAdditionsFile = new java.io.File(config3dScanAdditionsFileName);
+		if (!configFile.exists()) {
+			System.out.println("Create SIG configuration file in home directory.");
+			jpiv2.FileHandling.copyFile(
+				jlibDirName + fileSeparator + "config" + fileSeparator + "SIGconf.nc",
+				configFileName);
+		}
+		if (!config3dScanAdditionsFile.exists()) {
+			System.out.println("Create SIG configuration file for additional 3d scan parameters in home directory.");
+			createConfig3dScanAdditionsFile();
+		}
+		config = new ucar.nc2.NetcdfFileWriteable(configFileName);
+		config3dScanAdditions = new ucar.nc2.NetcdfFileWriteable(config3dScanAdditionsFileName);
+		// particle volume
+		g_np = config3dScanAdditions.read("g_np", true);
+		g_nsp = config3dScanAdditions.read("g_nsp", true);
+		g_dsp = config3dScanAdditions.read("g_dsp", true);
+		g_dp = config3dScanAdditions.read("g_dp", true);
+		g_w = config3dScanAdditions.read("g_w" , true);
+		// reference data generation
+		r_x0 = config3dScanAdditions.read("r_x0", true);
+		r_y0 = config3dScanAdditions.read("r_y0", true);
+		r_dx = config3dScanAdditions.read("r_dx", true);
+		r_dy = config3dScanAdditions.read("r_dy", true);
+		r_nx = config3dScanAdditions.read("r_nx", true);
+		r_ny = config3dScanAdditions.read("r_ny", true);
+		// image dimension
+		p_dimX = config.read("p_dimX", true);
+		p_dimY = config.read("p_dimY", true);
+		p_dimL = config.read("p_dimL", true);
+		p_dimR = config.read("p_dimR", true);
+		p_dimT = config.read("p_dimT", true);
+		p_dimB = config.read("p_dimB", true);
+		// particle space dimension
+		r_xmin = config.read("r_xmin", true);
+		r_xmax = config.read("r_xmax", true);
+		r_ymin = config.read("r_ymin", true);
+		r_ymax = config.read("r_ymax", true);
+		r_zmin = config.read("r_zmin", true);
+		r_zmax = config.read("r_zmax", true);
+		// light sheet information
+		lsheet_type = config.read("lsheet_type", true);
+		lsheet_rpos_z = config.read("lsheet_rpos_z", true);
+		lsheet_rthickness = config.read("lsheet_rthickness", true);
+		// particle size distribution
+		part_distribution = config.read("part_distribution", true);
+		part_min_diam = config.read("part_min_diam", true);
+		part_max_diam = config.read("part_max_diam", true);
+		part_mean_diam = config.read("part_mean_diam", true);
+		part_std_diam = config.read("part_std_diam", true);
+		// pattern information
+		pattern_meanx = config.read(
+			"pattern_meanx", true);
+		pattern_meany = config.read(
+			"pattern_meany", true);
+		// CCD information
+		ccd_fill_ratio_x = config.read("ccd_fill_ratio_x", true);
+		ccd_fill_ratio_y = config.read("ccd_fill_ratio_y", true);
+		ccd_saturation_level = config.read("ccd_saturation_level", true);
+		ccd_background_type = config.read("ccd_background_type", true);
+		ccd_background_mean_level = config.read("ccd_background_mean_level", true);
+		ccd_background_std_noise = config.read("ccd_background_std_noise", true);
+		ccd_pixel_horizontal_pitch = config.read("ccd_pixel_horizontal_pitch", true);
+		ccd_pixel_vertical_pitch = config.read("ccd_pixel_vertical_pitch", true);
+		// optic information
+		optic_object_distance = config.read("optic_object_distance", true);
+		optic_image_distance = config.read("optic_image_distance", true);
+		// initialize the user dialog
+		myDlg.addVariable(
+			"1. General", "", "");
+		myDlg.addVariable(
+			"g_np", String.valueOf(g_np), 
+			"number of particles per volume");
+		myDlg.addVariable(
+			"g_nsp", String.valueOf(g_nsp), 
+			"number of scan planes (images)");
+		myDlg.addVariable(
+			"g_dsp", String.valueOf(g_dsp),
+			"distance of scan planes (unit: real)");
+		myDlg.addVariable(
+			"g_dp", String.valueOf(g_dp), 
+			"maximum displacement (unit: real)");
+		myDlg.addVariable(
+			"g_w", String.valueOf(g_w), 
+			"flow domain width (fraction of particle space)");
+		myDlg.addVariable(
+			"2. Reference Data", "", "");
+		myDlg.addVariable(
+			"r_x0", String.valueOf(r_x0),
+			"x-coordinate of first vector location");
+		myDlg.addVariable(
+			"r_y0", String.valueOf(r_y0),
+			"y-coordinate of first vector location");
+		myDlg.addVariable(
+			"r_dx", String.valueOf(r_dx),
+			"horizontal vector spacing");
+		myDlg.addVariable(
+			"r_dy", String.valueOf(r_dy),
+			"vertical vector spacing");
+		myDlg.addVariable(
+			"r_nx", String.valueOf(r_nx),
+			"number of horizontal nodes");
+		myDlg.addVariable(
+			"r_ny", String.valueOf(r_ny),
+			"number of vertical nodes");
+		myDlg.addVariable(
+			"3. Image dimension", "", "");
+		myDlg.addVariable(
+			"p_dimX", String.valueOf(p_dimX.get()),
+			"image width (pixel)");
+		myDlg.addVariable(
+			"p_dimY", String.valueOf(p_dimY.get()), 
+			"image height (pixel");
+		myDlg.addVariable(
+			"p_dimL", String.valueOf(p_dimL.get()), 
+			"left strip (pixel)");
+		myDlg.addVariable(
+			"p_dimR", String.valueOf(p_dimR.get()), 
+			"right strip (pixel)"); 
+		myDlg.addVariable(
+			"p_dimT", String.valueOf(p_dimT.get()), 
+			"top strip (pixel)");
+		myDlg.addVariable(
+			"p_dimB", String.valueOf(p_dimB.get()), 
+			"bottom strip (pixel)");
+		myDlg.addVariable(
+			"4. Particle space dimension", "", "");
+		myDlg.addVariable(
+			"r_xmin", String.valueOf(r_xmin.get()), 
+			"particle space x min (unit: real)");
+		myDlg.addVariable(
+			"r_xmax", String.valueOf(r_xmax.get()), 
+			"particle space x max (unit: real)");
+		myDlg.addVariable(
+			"r_ymin", String.valueOf(r_ymin.get()), 
+			"particle space y min (unit: real)");
+		myDlg.addVariable(
+			"r_ymax", String.valueOf(r_ymax.get()), 
+			"particle space y max (unit: real)");
+		myDlg.addVariable(
+			"r_zmin", String.valueOf(r_zmin.get()), 
+			"particle space z min (unit: real)");
+		myDlg.addVariable(
+			"r_zmax", String.valueOf(r_zmax.get()), 
+			"particle space z max (unit: real)");
+		myDlg.addVariable(
+			"5. Light sheet information", "", "");
+		myDlg.addVariable(
+			"lsheet_type", String.valueOf(lsheet_type.getString()), 
+			"light sheet type: uniform or gaussian"); 
+		myDlg.addVariable(
+			"lsheet_rpos_z", String.valueOf(lsheet_rpos_z.get()), 
+			"initial light sheet position, will be shifted in positive direction during scan (unit: real)");
+		myDlg.addVariable(
+			"lsheet_rthickness", String.valueOf(lsheet_rthickness.get()), 
+			"light sheet thickness (unit: real)");
+		myDlg.addVariable(
+			"6. Particle size distribution", "", ""); 
+		myDlg.addVariable(
+			"part_distribution", String.valueOf(part_distribution.getString()), 
+			"size distribution: uniform or gaussian");
+		myDlg.addVariable(
+			"part_min_diam", String.valueOf(part_min_diam.get()), 
+			"minimum particle diameter (relative)");
+		myDlg.addVariable(
+			"part_max_diam", String.valueOf(part_max_diam.get()), 
+			"maximum particle diameter (relative)");
+		myDlg.addVariable(
+			"part_mean_diam", String.valueOf(part_mean_diam.get()), 
+			"mean particle diameter (relative)");
+		myDlg.addVariable(
+			"part_std_diam", String.valueOf(part_std_diam.get()), 
+			"standard deviation of the gaussian size distribution (relative)");
+		myDlg.addVariable(
+			"7. Pattern information", "", "");
+		myDlg.addVariable(
+			"pattern_meanx", String.valueOf(pattern_meanx.get()), 
+			"particle image size (pixel)");
+		myDlg.addVariable(
+			"pattern_meany", String.valueOf(pattern_meany.get()), 
+			"particle image size (pixel)");
+		myDlg.addVariable(
+			"8. CCD information", "", "");
+		myDlg.addVariable(
+			"ccd_fill_ratio_x", String.valueOf(ccd_fill_ratio_x.get()), 
+			"CCD fill ratio: 0.0 .. 1.0"); 
+		myDlg.addVariable(
+			"ccd_fill_ratio_y", String.valueOf(ccd_fill_ratio_y.get()), 
+			"CCD fill ratio: 0.0 .. 1.0"); 
+		myDlg.addVariable(
+			"ccd_saturation_level", String.valueOf(ccd_saturation_level.get()), 
+			"CCD saturation level: 0.0 .. 1.0"); 
+		myDlg.addVariable(
+			"ccd_background_type", String.valueOf(ccd_background_type.getString()), 
+			"image background: uniform or gaussian"); 
+		myDlg.addVariable(
+			"ccd_background_mean_level", String.valueOf(ccd_background_mean_level.get()), 
+			"CCD background grey level");
+		myDlg.addVariable(
+			"ccd_background_std_noise", String.valueOf(ccd_background_std_noise.get()), 
+			"CCD noise (grey values)"); 
+		myDlg.addVariable(
+			"ccd_pixel_horizontal_pitch", String.valueOf(ccd_pixel_horizontal_pitch.get()), 
+			"pixel scaling (pixel/real)");
+		myDlg.addVariable(
+			"ccd_pixel_vertical_pitch", String.valueOf(ccd_pixel_vertical_pitch.get()), 
+			"pixel scaling (pixel/real)"); 
+		myDlg.addVariable(
+			"9. Optic information", "", ""); 
+		myDlg.addVariable(
+			"optic_object_distance", String.valueOf(optic_object_distance.get()), 
+			"object - lens distance d0");
+		myDlg.addVariable(
+			"optic_image_distance", String.valueOf(optic_image_distance.get()), 
+			"CCD - lens distance di (magnification: di/d0)");
+	}
+	
+	/** read the user input and modify the configuration file
+	*/
+	public void writeConfigFile() {
+		// read
+		// particle volume
+		g_np.set(myDlg.getAsInt("g_np"));
+		g_nsp.set(myDlg.getAsInt("g_nsp"));
+		g_dsp.set(myDlg.getAsDouble("g_dsp"));
+		g_dp.set(myDlg.getAsDouble("g_dp"));
+		g_w.set(myDlg.getAsDouble("g_w"));
+		// reference data generation
+		r_x0.set(myDlg.getAsInt("r_x0"));
+		r_y0.set(myDlg.getAsInt("r_y0"));
+		r_dx.set(myDlg.getAsInt("r_dx"));
+		r_dy.set(myDlg.getAsInt("r_dy"));
+		r_nx.set(myDlg.getAsInt("r_nx"));
+		r_ny.set(myDlg.getAsInt("r_ny"));
+		// image dimension
+		p_dimX.set(myDlg.getAsInt("p_dimX"));
+		p_dimY.set(myDlg.getAsInt("p_dimY"));
+		p_dimL.set(myDlg.getAsInt("p_dimL"));
+		p_dimR.set(myDlg.getAsInt("p_dimR"));
+		p_dimT.set(myDlg.getAsInt("p_dimT"));
+		p_dimB.set(myDlg.getAsInt("p_dimB"));
+		// particle space dimension
+		r_xmin.set(myDlg.getAsDouble("r_xmin"));
+		r_xmax.set(myDlg.getAsDouble("r_xmax"));
+		r_ymin.set(myDlg.getAsDouble("r_ymin"));
+		r_ymax.set(myDlg.getAsDouble("r_ymax"));
+		r_zmin.set(myDlg.getAsDouble("r_zmin"));
+		r_zmax.set(myDlg.getAsDouble("r_zmax"));
+		// light sheet information
+		lsheet_type.setString(myDlg.getAsString("lsheet_type"));
+		lsheet_rpos_z.set(myDlg.getAsDouble("lsheet_rpos_z"));
+		initial_lsheet_rpos_z = myDlg.getAsDouble("lsheet_rpos_z");
+		lsheet_rthickness.set(myDlg.getAsDouble("lsheet_rthickness"));
+		// particle size distribution
+		part_distribution.setString(myDlg.getAsString("part_distribution"));
+		part_min_diam.set(myDlg.getAsDouble("part_min_diam"));
+		part_max_diam.set(myDlg.getAsDouble("part_max_diam"));
+		part_mean_diam.set(myDlg.getAsDouble("part_mean_diam"));
+		part_std_diam.set(myDlg.getAsDouble("part_std_diam"));
+		// pattern information
+		pattern_meanx.set(myDlg.getAsDouble("pattern_meanx"));
+		pattern_meany.set(myDlg.getAsDouble("pattern_meany"));
+		// CCD information
+		ccd_fill_ratio_x.set(myDlg.getAsDouble("ccd_fill_ratio_x"));
+		ccd_fill_ratio_y.set(myDlg.getAsDouble("ccd_fill_ratio_y"));
+		ccd_saturation_level.set(myDlg.getAsDouble("ccd_saturation_level"));
+		ccd_background_type.setString(myDlg.getAsString("ccd_background_type"));
+		ccd_background_mean_level.set(myDlg.getAsDouble("ccd_background_mean_level"));
+		ccd_background_std_noise.set(myDlg.getAsDouble("ccd_background_std_noise"));
+		ccd_pixel_horizontal_pitch.set(myDlg.getAsDouble("ccd_pixel_horizontal_pitch"));
+		ccd_pixel_vertical_pitch.set(myDlg.getAsDouble("ccd_pixel_vertical_pitch"));
+		// optic information
+		optic_object_distance.set(myDlg.getAsDouble("optic_object_distance"));
+		optic_image_distance.set(myDlg.getAsDouble("optic_image_distance"));
+		// write
+		// particle volume
+		config3dScanAdditions.write("g_np", g_np);
+		config3dScanAdditions.write("g_nsp", g_nsp);
+		config3dScanAdditions.write("g_dsp", g_dsp);
+		config3dScanAdditions.write("g_dp", g_dp);
+		config3dScanAdditions.write("g_w", g_w);
+		// reference data generation
+		config3dScanAdditions.write("r_x0", r_x0);
+		config3dScanAdditions.write("r_y0", r_y0);
+		config3dScanAdditions.write("r_dx", r_dx);
+		config3dScanAdditions.write("r_dy", r_dy);
+		config3dScanAdditions.write("r_nx", r_nx);
+		config3dScanAdditions.write("r_ny", r_ny);
+		config3dScanAdditions.flush();
+		// image dimension
+		config.write("p_dimX", p_dimX);
+		config.write("p_dimY", p_dimY);
+		config.write("p_dimL", p_dimL);
+		config.write("p_dimR", p_dimR);
+		config.write("p_dimT", p_dimT);
+		config.write("p_dimB", p_dimB);
+		// particle space dimension
+		config.write("r_xmin", r_xmin);
+		config.write("r_xmax", r_xmax);
+		config.write("r_ymin", r_ymin);
+		config.write("r_ymax", r_ymax);
+		config.write("r_zmin", r_zmin);
+		config.write("r_zmax", r_zmax);
+		// light sheet information
+		config.write("lsheet_type", lsheet_type);
+		config.write("lsheet_rpos_z", lsheet_rpos_z);
+		config.write("lsheet_rthickness", lsheet_rthickness);
+		// particle size distribution
+		config.write("part_distribution", part_distribution);
+		config.write("part_min_diam", part_min_diam);
+		config.write("part_max_diam", part_max_diam);
+		config.write("part_mean_diam", part_mean_diam);
+		config.write("part_std_diam", part_std_diam);
+		// pattern information
+		config.write("pattern_meanx", pattern_meanx);
+		config.write("pattern_meany", pattern_meany);
+		// CCD information
+		config.write("ccd_fill_ratio_x", ccd_fill_ratio_x);
+		config.write("ccd_fill_ratio_y", ccd_fill_ratio_y);
+		config.write("ccd_saturation_level", ccd_saturation_level);
+		config.write("ccd_background_type", ccd_background_type);
+		config.write("ccd_background_mean_level", ccd_background_mean_level);
+		config.write("ccd_background_std_noise", ccd_background_std_noise);
+		config.write("ccd_pixel_horizontal_pitch", ccd_pixel_horizontal_pitch);
+		config.write("ccd_pixel_vertical_pitch", ccd_pixel_vertical_pitch);
+		// optic information
+		config.write("optic_object_distance", optic_object_distance);
+		config.write("optic_image_distance", optic_image_distance);
+		config.flush();
+	}
+	
+	public void createConfig3dScanAdditionsFile() {
+		// create file and add variables
+		newConfig3dScanAdditions = new ucar.nc2.NetcdfFileWriteable(config3dScanAdditionsFileName, true);
+		newConfig3dScanAdditions.addVariable( "g_np",ucar.ma2.DataType.INT,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "g_nsp",ucar.ma2.DataType.INT,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "g_dsp",ucar.ma2.DataType.DOUBLE,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "g_dp",ucar.ma2.DataType.DOUBLE,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "g_w",ucar.ma2.DataType.DOUBLE,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "r_x0",ucar.ma2.DataType.INT,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "r_y0",ucar.ma2.DataType.INT,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "r_dx",ucar.ma2.DataType.INT,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "r_dy",ucar.ma2.DataType.INT,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "r_nx",ucar.ma2.DataType.INT,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.addVariable( "r_ny",ucar.ma2.DataType.INT,(java.util.List) new java.util.Vector(0) );
+		newConfig3dScanAdditions.create();
+		// init variables with initial default values
+		g_np = new ucar.ma2.ArrayInt.D0();
+		g_nsp = new ucar.ma2.ArrayInt.D0();
+		g_dsp = new ucar.ma2.ArrayDouble.D0();
+		g_dp = new ucar.ma2.ArrayDouble.D0();
+		g_w = new ucar.ma2.ArrayDouble.D0();
+		r_x0 = new ucar.ma2.ArrayInt.D0();
+		r_y0 = new ucar.ma2.ArrayInt.D0();
+		r_dx = new ucar.ma2.ArrayInt.D0();
+		r_dy = new ucar.ma2.ArrayInt.D0();
+		r_nx = new ucar.ma2.ArrayInt.D0();
+		r_ny = new ucar.ma2.ArrayInt.D0();
+		g_np.set(1000000);
+		g_nsp.set(50);
+		g_dsp.set(0.005034784977);
+		g_dp.set(0.0025);
+		g_w.set(0.8);
+		r_x0.set(32);
+		r_y0.set(32);
+		r_dx.set(16);
+		r_dy.set(16);
+		r_nx.set(38);
+		r_ny.set(38);
+		// write default values to file
+		newConfig3dScanAdditions = ucar.nc2.NetcdfFileWriteable.openExisting(config3dScanAdditionsFileName, false);
+		newConfig3dScanAdditions.write("g_np", g_np);
+		newConfig3dScanAdditions.write("g_nsp", g_nsp);
+		newConfig3dScanAdditions.write("g_dsp", g_dsp);
+		newConfig3dScanAdditions.write("g_dp", g_dp);
+		newConfig3dScanAdditions.write("g_w", g_w);
+		newConfig3dScanAdditions.write("r_x0", r_x0);
+		newConfig3dScanAdditions.write("r_y0", r_y0);
+		newConfig3dScanAdditions.write("r_dx", r_dx);
+		newConfig3dScanAdditions.write("r_dy", r_dy);
+		newConfig3dScanAdditions.write("r_nx", r_nx);
+		newConfig3dScanAdditions.write("r_ny", r_ny);
+		newConfig3dScanAdditions.flush();
+		newConfig3dScanAdditions.close();
+	}
+	
+	/** the particle image generation
+	*/
+	public void generateParticleImages() {	
+		// prepare the random particle and image generation
+		int np = g_np.get();
+		double dp = g_dp.get();
+		double w = g_w.get();
+		double dsp = g_dsp.get();
+		int nsp = g_nsp.get();
+		// decimal format for file numbering
+		int digits = 1 + (int) ( Math.log(nsp) / Math.log(10) );
+		String format = new String();
+		for(int i=0; i<digits; i++) format += "0";
+		java.text.DecimalFormat df = new java.text.DecimalFormat(format);
+		// ask the user for a destination filename
+		System.out.println("Select a base file name for the image stack.");
+		String destPath;
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		myFileChooser.setFiletype(myFileChooser.PNG, false);
+		int approve = myFileChooser.showSaveDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			destPath = myFileChooser.getSelectedFile().toString();
+			// remove any extension
+			int index = destPath.lastIndexOf('.');
+			if(index != -1) destPath = destPath.substring(0, index);
+		} else {
+			System.out.println("No destination file specified.");
+			return;
+		}
+		// particle volume
+		double vx = r_xmax.get() - r_xmin.get();	// particle volume
+		double vy = r_ymax.get() - r_ymin.get();
+		double vz = r_zmax.get() - r_zmin.get();
+		double dz = 0;					// displacement
+		// rotation of the coordinate system by Eulerian angles
+		double a = Math.toRadians(90);			// nutation
+		double b = Math.toRadians(0);			// rotation
+		double c = Math.toRadians(0);			// precession
+		jpiv2.CmdInterpreter ci = jpiv.getCmdInterpreter();
+		jpiv2.PivImg pivImg;
+		double x, y, z;
+		for(int f=0; f<nsp; f++) {
+			// create random particle position files
+			String fileNameA = destPath + "A.dat";
+			String fileNameB = destPath + "B.dat";
+			File fileA = new File( fileNameA );
+			File fileB = new File( fileNameB );
+			bwA = new java.io.BufferedWriter( new java.io.FileWriter(fileA) );
+			bwB = new java.io.BufferedWriter( new java.io.FileWriter(fileB) );
+			jpiv2.PivUtil.createRandomParticleVolumes(
+				bwA, 
+				bwB,
+				vx,
+				vy,
+				vz,
+				a,
+				b,
+				c,
+				np,
+				dp,
+				w);
+			// run the sig program
+			// image files
+			String imgNameA = destPath + df.format(f) + "A.tif";
+			String imgNameB = destPath + df.format(f) + "B.tif";
+			File imgA = new File( imgNameA );
+			File imgB = new File( imgNameB );
+			// calling the sig program
+			String[] cmd = {jlibDirName + fileSeparator + "linux" + fileSeparator + "sig -f " + configFileName + " " + fileNameA + " " + imgNameA};
+			ci.execute(cmd, ci.TYPE_SHELLCOMMAND);
+			cmd[0] = jlibDirName + fileSeparator + "linux" + fileSeparator + "sig -f " + configFileName + " " + fileNameB + " " + imgNameB;
+			ci.execute(cmd, ci.TYPE_SHELLCOMMAND);
+			// next scan plane
+			lsheet_rpos_z.set( initial_lsheet_rpos_z + (f+1)*dsp );
+			config.write("lsheet_rpos_z", lsheet_rpos_z);
+			config.flush();
+			// concatenate the images
+			pivImg = new jpiv2.PivImg(jpiv, imgNameA, imgNameB);
+			pivImg.writePivImageToFile("png", destPath + df.format(f) + ".png");
+			// add a link to the destination file to filelist
+			jpiv.getListFrame().appendElement(destPath + df.format(f) + ".png");
+			// cleanup
+			imgA.delete();
+			imgB.delete();
+			fileA.delete();
+			fileB.delete();
+		}
+		System.out.println("done.");
+		// create reference data
+		System.out.print("Create reference data files...");
+		jpiv.getListFrame().appendElements( jpiv2.PivUtil.createReferenceData(
+			destPath, 
+			vx,
+			vy,
+			vz,
+			a,
+			b,
+			c,
+			dp,
+			w,
+			nsp,
+			dsp,
+			optic_image_distance.get()/optic_object_distance.get() * ccd_pixel_horizontal_pitch.get(),
+			optic_image_distance.get()/optic_object_distance.get() * ccd_pixel_vertical_pitch.get(),
+			r_x0.get(),
+			r_y0.get(),
+			r_dx.get(),
+			r_dy.get(),
+			r_nx.get(),
+			r_ny.get(),
+			initial_lsheet_rpos_z,
+			jpiv.getSettings().loadSaveTecplotHeader) );
+		lsheet_rpos_z.set( initial_lsheet_rpos_z );
+		System.out.println("done.");
+		config.write("lsheet_rpos_z", lsheet_rpos_z);
+		config.flush();
+	}
+	
+	/** main method
+	*/
+	public void run() {
+		// create a user dialog
+		createDlg();
+		initDlg();
+		// display the dialog on screen and wait for the user
+		int proceed = myDlg.display();
+		// if the user pressed 'execute'
+		if (proceed == myDlg.EXECUTE_OPTION) {
+			writeConfigFile();
+			generateParticleImages();
+			config.close();
+			config3dScanAdditions.close();
+		}
+		// the user pressed 'quit'
+		else {
+			System.out.println("cancelled");
+		}
+	}
+	return this;
+}
+
+// execute synthetic image generation
+syntheticImageGenerator = syntheticImageGenerator();
+syntheticImageGenerator().run();
+// free memory
+jpiv.getCmdInterpreter().clearBshNamespace();

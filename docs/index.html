@@ -1,99 +1,88 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<title>JPIV Homepage</title>
+		<title>JPIV Documentation</title>
 		<link rel="stylesheet" type="text/css" href="format.css">
 		<link rel="shortcut icon" href="favicon.ico">
 		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-		<meta name="DC.Title" content="JPIV Homepage">
+		<meta name="DC.Title" content="JPIV Documentation">
 		<meta name="DC.Creator" content="Peter Vennemann">
-		<meta name="DC.Subject" content="JPIV Homepage">
+		<meta name="DC.Subject" content="JPIV Documentation">
 		<meta name="DC.Date" content="2020-04-20">
 		<meta name="DC.Format" content="text/html">
-		<meta name="DC.Identifier" content="http://www.jpiv.vennemann-online.de/index.html">
+		<meta name="DC.Identifier" content="https://eguvep.github.io/jpiv/index.html">
 		<meta name="DC.Language" content="en">
-		<meta name="DC.Rights" content="The author keeps all rights.">
 	</head>
 	<body>
 		<div id="navi">
 			<a href="index.html"><img src="fig/logo_home.png" alt="jpiv"></a><br><br>
 			<a class="navi" href="index.html">home</a><br>
-			<a class="navin" href="download.html">download</a><br>
+			<a class="navi" href="download.html">download</a><br>
 			<a class="navi" href="introduction.html">introduction</a><br>
-			<a class="navi" href="firststeps.html">guide</a><br>
-			<a class="navi" href="howto.html">how to ...</a><br>
-			<a class="navi" href="settings.html">documentation</a><br>
+			<a class="navi" href="firststeps.html">quick start</a><br>
+			<a class="navi" href="howto.html">how to</a><br>
+			<a class="navi" href="settings.html">reference</a><br>
 			<a class="navi" href="scripting.html">scripting</a><br>
-			<a class="navi" href="https://sourceforge.net/p/jpiv/discussion/950409/">forum</a><br>
-			<a class="navi" href="doc/index.html">javadoc</a><br>
-			<a class="navi" href="http://www.vennemann-online.de/">imprint</a><br>
+			<a class="navi" href="javadoc/index.html">javadoc</a><br>
+			<a class="navi" href="https://github.com/eguvep/jpiv/">repository</a><br>
 			<br>
 			<br>
 		</div>
 		<div id="cont">
 			<h1>JPIV</h1>
 			<p>
-			JPIV is a software package for Particle Image Velocimetry (PIV). The program is open source, platform independent, and available under the terms of the <a class="cont" href="http://www.gnu.org/licenses/gpl-3.0.txt">GNU General Public Licence</a>.
+			JPIV is a complete, open source, and platform independent software package for 2D Particle Image Velocimetry (PIV).
 			</p>
 			<p>
 			JPIV is useful for:<br>
 			<ul>
-			<li>multi-pass, multi-grid, FFT based PIV evaluation</li>
-			<li>sum of correlation ensemble evaluation</li>
+			<li>multi-pass, multi-grid, FFT based correlation algorithm</li>
+			<li>ensemble correlation / ensemble averaging</li>
 			<li>single pixel ensemble evaluation</li>
 			<li>vector field filtering, outlier detection</li>
+			<li>rectangular interrogation areas possible</li>
 			<li>calculation of vorticity and other derivatives</li>
 			<li>3d velocity field reconstruction</li>
 			<li>image display (png, tif, pgm, imx, im7)</li>
-			<li>vector field display</li>
+			<li>publication ready vector field display</li>
 			<li>vector field graphics export (eps, pdf, emf, svg, png, jpeg, ...)</li>
 			<li>velocity profile extraction, flow estimation</li>
 			<li>vector field statistics</li>
+			<li>region of interest</li>
+			<li>synthetic image generation</li>
 			<li>command line control and scripting via BeanShell</li>
 			<li>batch processing of a list of files as well as directories</li>
-			</ul>
-			JPIV is not intended for:<br>
-			<ul>
-			<li>image acquisition (the vendor of your camera might have  supplied you with some good software)</li>
-			<li>image pre-processing (I like to use <a class="cont" href="http://rsb.info.nih.gov/ij/">ImageJ</a> for that purpose)</li>
 			</ul>
 			</p>
 			<p>
                         <img src="fig/mainframe.jpg" alt="JPIV user interface"><br>
 			</p>
 			<p>
-			JPIV's native vector format is directly compatible to <a class="cont" href="http://www.tecplot.com/">TECPLOT</a>.
+			You have full access to the <a class="cont" href="javadoc/index.html">well documented</a> <a class="cont" href="https://github.com/eguvep/jpiv">source code</a>. Contributions are welcome!
 			</p>
 			<p>
-			You have full access to the <a class="cont" href="doc/index.html">documented</a> source code. You can easily insert a few lines of code to extract some intermediate data for your studies, alter a few lines to test a new correlation or filtering approach, add a new class for a unique visualization, alter the user interface, and so forth.
+			You have full access to the core classes and methods of JPIV via simple scripts. Scripting also enables you to integrate your Matlab, Perl, or Python scripts, as well as any other command line tool. Have a look at the <a class="cont" href="scripting.html">scripting intro</a> for more information.
 			</p>
 			<p>
-			With the help of BeanShell scripts, you can automize your tasks or add some funcionality even without recompiling JPIV. In BeanShell scripts, you have full access to the core classes and methods of JPIV. Via scripts it is also easy to integrate your Matlab, Perl, or Python scripts, as well as any other command line tool. Have a look at the <a class="cont" href="scripting.html">scripting tutorial</a> for more information.
+			I developed JPIV in the scope of the work on my <a class="cont" href="http://resolver.tudelft.nl/uuid:28a0bbb8-e671-4806-ba52-cca2e6db0d50">PhD thesis</a> about micro-scale blood flow measurements. Since 2004, JPIV is in use for research and education and constantly maintained. In 2020, a collaboration with the <a class="cont" href="https://github.com/OpenPIV/">OpenPIV</a> project has started. As a first step, <a class="cont" href="https://github.com/OpenPIV/openpiv_tk_gui">a simple GUI</a> with a workflow, comparable to that of JPIV has been introduced.
 			</p>
 			<p>
-			I used JPIV in the scope of my <a class="cont" href="http://repository.tudelft.nl/assets/uuid:28a0bbb8-e671-4806-ba52-cca2e6db0d50/vennemann_20080421.pdf">thesis</a> about micro-scale blood flow measurements.
-			</p>
-			<p>
-			Other open source PIV software projects:<br>
+			Other open source PIV projects:<br>
 			<a class="cont" href="http://pivproc.nambis.de/">AnaPIV</a> (Pascal; binaries for Mac and Windows)<br>
-			<a class="cont" href="http://www.civproject.org/">civ project</a> (Fortran/Matlab; binaries for Linux and Windows)<br>
 			<a class="cont" href="http://gpiv.sourceforge.net/index.html">GPIV</a> (C; binaries for Linux)<br>
 			<a class="cont" href="https://sites.google.com/site/qingzongtseng/piv">ImageJ plugin</a> (Java)<br>
-			<a class="cont" href="http://www.math.uio.no/~jks/matpiv/">MatPIV</a> (Matlab)<br>
-			<a class="cont" href="http://www.oceanwave.jp/softwares/mpiv/index.php">mpiv</a> (Matlab)<br>
 			<a class="cont" href="http://www.openpiv.net/">OpenPIV</a> (C/C++/Matlab/Python; binaries for Windows)<br>
 			<a class="cont" href="http://osiv.sourceforge.net/index.html">OSIV</a> (C/Matlab; binaries for Linux, Matlab Toolbox for Mac and Windows)<br>
-			<a class="cont" href="http://pivlab.blogspot.com/">PIVlab</a> (Matlab)<br>
 			<a class="cont" href="http://sourceforge.net/projects/ppiv/">PPIV</a> (C++; build instructions for Linux-cluster)<br>
-			<a class="cont" href="http://pacific.mpi-cbg.de/wiki/index.php/PIV_analyser">PIV analyser</a> (ImageJ plugin)
+			</p>
+			<p>
+			  Projects that solely rely on Matlab:<br>
+			  <a class="cont" href="http://www.oceanwave.jp/softwares/mpiv/index.php">mpiv</a><br>
+			  <a class="cont" href="http://pivlab.blogspot.com/">PIVlab</a><br>
 			</p>
 			<p>
 			Closed source downloads:<br>
 			<a class="cont" href="http://www.pivtec.com/">PIVview</a> (demo binaries for Linux, Windows, and Mac)<br>
-			<a class="cont" href="http://ltcf.tam.uiuc.edu/downloads.html">PIV Sleuth and CleanVec</a> (binaries for Windows)
-			</p>
-			<p>
-			Please, join the <a class="cont" href="http://sourceforge.net/forum/forum.php?forum_id=950409/">forum</a> and discuss questions and comments!
 			</p>
 			<br>
 			<br>

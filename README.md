@@ -11,10 +11,13 @@ JPIV is a complete and open source software package for 2D [Particle Image Veloc
 - highly accurate and fast because of multi-pass, multi-grid, FFT based correlation algorithmm
 - ensemble correlation (correlation averaging) implemented
 - complete ready for Micro-PIV and high resolution boundary flow measurements: rectangular evaluation areas possible, single pixel resolution ensemble evaluation implemented
+- outlier detection
 - calculation of various statistical information as well as some derivatives like vorticity
 - 3d velocity field reconstruction from 2d planes in incompressible flows
 - publication ready vector plots and export in various vector graphics and pixel formats
 - arbitrary velocity profile extraction
+- region of interest
+- synthetic image generation
 - extension and automation by user scripts
 
 ## Running JPIV
@@ -28,12 +31,13 @@ Prerequisite: A Java Runtime Environment (JRE).
 
 ## Using JPIV
 
-- [Introduction for PIV Novices](https://github.com/eguvep/jpiv/doc/introduction.html)
-- [Quick Start Guide for JPIV Beginners](https://github.com/eguvep/jpiv/doc/fiststeps.html)
-- [HOWTO for Expert Users](https://github.com/eguvep/jpiv/doc/howto.html)
-- [JPIV Parameter Reference](https://github.com/eguvep/jpiv/doc/settings.html)
+- [Introduction for PIV Novices](https://eguvep.github.io/jpiv/introduction.html)
+- [Quick Start Guide for JPIV Beginners](https://eguvep.github.io/jpiv/fiststeps.html)
+- [HOWTO for Expert Users](https://eguvep.github.io/jpiv/howto.html)
+- [JPIV Parameter Reference](https://eguvep.github.io/jpiv/settings.html)
+- [Test Images](https://eguvep.github.io/jpiv/download.html)
 
 ## Extending JPIV
 
-- [User Script Coding Intro](https://github.com/eguvep/jpiv/doc/scripting.html)
-- [JPIV Code Documentation](https://github.com/eguvep/jpiv/dist/doc/)
+- [User Script Coding Intro](https://eguvep.github.io/jpiv/scripting.html)
+- [JPIV Code Documentation](https://eguvep.github.io/jpiv/javadoc/)

@@ -1,0 +1,97 @@
+thresholdFilter() { 
+
+        // global variables 
+        jpiv2.ScriptDlg myDlg; 
+        double minX;  
+        double maxX; 
+        double minY;  
+        double maxY; 
+
+        // initialize graphical user dialog 
+        private void initDlg() { 
+                myDlg = new jpiv2.ScriptDlg(jpiv, 
+                        "ThresholdFilter", 
+                        "João Brás"); 
+                myDlg.setDate("September 2011"); 
+                myDlg.setOs("independent"); 
+                myDlg.setDependencies("none"); 
+                myDlg.setComment( 
+                        "This script give the possibility to the user to choose" +
+			" the maximum and minimun values that any vector can have.");
+                myDlg.addVariable("minX", "-32", "minimum x vector component"); 
+                myDlg.addVariable("maxX", "32", "maximun x vector component"); 
+                myDlg.addVariable("minY", "-32", "minimum y vector component"); 
+                myDlg.addVariable("maxY", "32", "maximun y vector component"); 
+        } 
+
+        // initialize variables  
+        private void initVariables() { 
+                minX = myDlg.getAsDouble("minX"); 
+                maxX = myDlg.getAsDouble("maxX");
+                minY = myDlg.getAsDouble("minY"); 
+                maxY = myDlg.getAsDouble("maxY"); 
+        } 
+
+	// show a file chooser dialog for the output filename
+	// return: a filename
+	private String showFileChooser() {
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		myFileChooser.setFiletype(myFileChooser.ALL, false);
+		int approve = myFileChooser.showSaveDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			String pathname = myFileChooser.getSelectedFile().toString();
+			// remove any extension
+			int index = pathname.lastIndexOf('.');
+			if(index != -1) pathname = pathname.substring(0, index);
+			return(pathname);
+		} else {
+			System.out.println("No destination file specified.");
+			return(null);
+		}
+	} 
+
+        // main function 
+        private void run() { 
+                initDlg(); 
+                int proceed = myDlg.display(); 
+		if (proceed == myDlg.EXECUTE_OPTION) { 
+                        initVariables(); 
+                        String destPath = showFileChooser(); 
+                        if (destPath != null) { 
+                                String[] files = jpiv.getListFrame().getSelectedElements(); 
+                                if ( files == null) { 
+                                        System.out.println("Select at least one vector file.");
+				} else { 
+                                        java.text.DecimalFormat df = 
+					jpiv2.FileHandling.getCounterFormat(files.length);
+                                        for(int f=0; f<files.length; f++) {
+						double[][] pivData = new jpiv2.PivData(files[f]).getPivData();
+                                                for(int i = 0; i < pivData.length; i++) { 
+                                                	if (pivData[ i ][2] < minX || 
+							    pivData[ i ][2] > maxX || 
+							    pivData[ i ][3] < minY || 
+							    pivData[ i ][3] > maxY) { 
+								pivData[ i ][2] = 0;
+								pivData[ i ][3] = 0; 
+							} 
+                                                }
+						jpiv2.PivData theData = new jpiv2.PivData( pivData );
+						theData.writeDataToFile(
+							destPath + df.format(f) + ".jvc", true);
+						jpiv.getListFrame().appendElement(
+							destPath + df.format(f) + ".jvc");  
+                                        } 
+                                } 
+                        } 
+                } else { 
+			System.out.println("cancelled."); 
+                } 
+        } 
+
+        return this;
+} 
+
+// start filter process in background and clean up variables 
+thresholdFilter = thresholdFilter();
+new Thread( thresholdFilter ).start(); 
+jpiv.getCmdInterpreter().clearBshNamespace();

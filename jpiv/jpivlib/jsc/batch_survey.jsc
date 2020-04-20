@@ -1,0 +1,164 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+batchSurvey() {
+
+	// global variables
+	jpiv2.ScriptDlg myDlg;
+	
+	// set up graphical user dialog
+	private void initDlg() {
+		myDlg = new jpiv2.ScriptDlg(jpiv,
+			"Batch Survey",
+			"mail@vennemann-online.de");
+		myDlg.setDate("June 2006");
+		myDlg.setOs("independent");
+		myDlg.setDependencies("none");
+		myDlg.setComment(
+			"Writes global statistics of the selected vector data files " + 
+			"into the specified ascii text file.");
+	}
+	
+	// show a file chooser dialog for the output filename
+	// return: a filename
+	private String showFileChooser() {
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		myFileChooser.setFiletype(myFileChooser.ALL, false);
+		int approve = myFileChooser.showSaveDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			String pathname = myFileChooser.getSelectedFile().toString();
+			// remove any extension
+			int index = pathname.indexOf('.');
+			if(index != -1) pathname = pathname.substring(0, index);
+			return(pathname);
+		} else {
+			System.out.println("No destination file specified.");
+			return(null);
+		}
+	}
+	
+	// write survey data into a file
+	// files: a list of source filenames
+	// destPath: a filename for writing the data
+	private void writeSurveyData(String[] files, String destPath) {
+		BufferedWriter file = new BufferedWriter(new FileWriter(destPath + ".txt"));
+		jpiv2.PivData pivData = new jpiv2.PivData(files[0]);  
+		String s = 
+			"ux_mean\tux_median\tux_min\tux_max\tux_stdev" +
+			"\tuy_mean\tuy_median\tuy_min\tuy_max\tuy_stdev" +
+			"\tu_mean\tu_median\tu_min\tu_max\tu_stdev\t";
+		if (pivData.getNumOfColumns() > 4) s +=
+			"f_mean\tf_median\tf_min\tf_max\tf_stdev\t";
+			s += "filename\n";
+		file.write(s);
+		for (int f=0; f<files.length; f++) {
+			pivData = new jpiv2.PivData(files[f]);  
+			// ux
+			double uxmean = jpiv2.Statistics.getAverage(pivData.getDataColumn(2));
+			double uxmedian = jpiv2.Statistics.getMedian(pivData.getDataColumn(2));
+			double uxmin = jpiv2.Statistics.getMin(pivData.getDataColumn(2));
+			double uxmax = jpiv2.Statistics.getMax(pivData.getDataColumn(2));
+			double uxstdev = jpiv2.Statistics.getStandardDeviation(pivData.getDataColumn(2));
+			// uy
+			double uymean = jpiv2.Statistics.getAverage(pivData.getDataColumn(3));
+			double uymedian = jpiv2.Statistics.getMedian(pivData.getDataColumn(3));
+			double uymin = jpiv2.Statistics.getMin(pivData.getDataColumn(3));
+			double uymax = jpiv2.Statistics.getMax(pivData.getDataColumn(3));
+			double uystdev = jpiv2.Statistics.getStandardDeviation(pivData.getDataColumn(3));
+			// u
+			double umean = jpiv2.Statistics.getAverage(pivData.getAbsValue(2, 3));
+			double umedian = jpiv2.Statistics.getMedian(pivData.getAbsValue(2, 3));
+			double umin = jpiv2.Statistics.getMin(pivData.getAbsValue(2, 3));
+			double umax = jpiv2.Statistics.getMax(pivData.getAbsValue(2, 3));
+			double ustdev = jpiv2.Statistics.getStandardDeviation(pivData.getAbsValue(2, 3));
+			// flag
+			double fmean = 1d;
+			double fmedian =1d;
+			double fmin = 1d;
+			double fmax = 1d;
+			double fstdev = 1d;
+			if (pivData.getNumOfColumns() > 4) {
+				fmean = jpiv2.Statistics.getAverage(pivData.getDataColumn(4));
+				fmedian = jpiv2.Statistics.getMedian(pivData.getDataColumn(4));
+				fmin = jpiv2.Statistics.getMin(pivData.getDataColumn(4));
+				fmax = jpiv2.Statistics.getMax(pivData.getDataColumn(4));
+				fstdev = jpiv2.Statistics.getStandardDeviation(pivData.getDataColumn(4));
+			}
+			java.text.DecimalFormat df = new java.text.DecimalFormat("+0.0000E00;-0.0000E00");
+			// write the data
+			s = 
+				df.format(uxmean) + "\t" +
+				df.format(uxmedian) + "\t" +
+				df.format(uxmin) + "\t" +
+				df.format(uxmax) + "\t" +
+				df.format(uxstdev) + "\t"+
+				df.format(uymean) + "\t" +
+				df.format(uymedian) + "\t" +
+				df.format(uymin) + "\t" +
+				df.format(uymax) + "\t" +
+				df.format(uystdev) + "\t"+
+				df.format(umean) + "\t" +
+				df.format(umedian) + "\t" +
+				df.format(umin) + "\t" +
+				df.format(umax) + "\t" +
+				df.format(ustdev) + "\t";
+				if (pivData.getNumOfColumns() > 4) {
+					s += df.format(fmean) + "\t" +
+						df.format(fmedian) + "\t" +
+						df.format(fmin) + "\t" +
+						df.format(fmax) + "\t" +
+						df.format(fstdev) + "\t";
+				}
+				s += files[f] +"\n";
+			file.write(s);
+			System.out.print(".");
+		}
+		file.flush();
+		file.close();
+	}
+	
+	// main function
+	private void run() {
+		initDlg();
+		int proceed = myDlg.display();
+		if (proceed == myDlg.EXECUTE_OPTION) {
+			String destPath = showFileChooser();
+			if (destPath != null) {
+				String[] files = jpiv.getListFrame().getSelectedElements();
+				if ( files == null) {
+					System.out.println("Select at least one vector file.");
+				} else {
+					System.out.print("None. Start batch survey .");
+					writeSurveyData(files, destPath);
+					System.out.println("done");
+				}
+			}
+		}
+		else {
+			System.out.println("Cancelled.");
+		}
+	}
+	
+	return this;
+}
+
+// execute batchSurvey in background and free memory
+batchSurvey = batchSurvey();
+new Thread( batchSurvey ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();

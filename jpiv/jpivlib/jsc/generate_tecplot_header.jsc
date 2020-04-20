@@ -1,0 +1,37 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+// Writes a Tecplot header for the selected vector file into the cmd window.
+public void createTecplotHeader() {
+	list = jpiv.getListFrame();
+	file = list.getSelectedElement();
+	if (file == null) {
+		System.out.println("Select a file in the files window first.");
+		return;
+	}
+	data = new jpiv2.PivData(file);
+	int[] dim = data.getDimension();
+	System.out.println("TITLE = " + "\"" + file + "\"");
+	System.out.println("VARIABLES = \"x\", \"y\", \"Vx\", \"Vy\"");
+	System.out.println("ZONE I=" + dim[0] + ", J=" + dim[1] + ", F=POINT");
+}
+
+// execute function and free memory
+createTecplotHeader();
+jpiv.getCmdInterpreter().clearBshNamespace();

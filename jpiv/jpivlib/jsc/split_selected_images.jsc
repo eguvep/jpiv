@@ -1,0 +1,69 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+splitSelectedImages() {
+	
+	// main function
+	private void run() {
+		String[] files = jpiv.getListFrame().getSelectedElements();
+		if ( files == null) {
+			System.out.println("Select at least one image file.");
+		} else {
+			for(int f=0; f<files.length; f++) {
+				System.out.println( "Split image " + files[f] );
+				// read
+				jpiv2.PivImg img = new jpiv2.PivImg( jpiv, files[f] );
+				// crop
+				int w = img.getWidth();
+				int h = img.getHeight()/2;
+				javax.media.jai.PlanarImage piA = img.getSubImage(0,0,w,h,0);
+				javax.media.jai.PlanarImage piB = img.getSubImage(0,0,w,h,1);
+				// filename
+				extIdx = files[f].lastIndexOf('.');
+				String basename = files[f].substring(0, extIdx);
+				String extension = "png";
+				//String extension = files[f].substring(extIdx+1, files[f].length());
+				// save
+				saveImage( piA, basename + "_a." + extension, extension);
+				saveImage( piB, basename + "_b." + extension, extension);
+				// append to list
+				jpiv.getListFrame().appendElement( basename + "_a." + extension );
+				jpiv.getListFrame().appendElement( basename + "_b." + extension );
+			}
+			System.out.println("Finished!");
+		}
+	}
+	
+	// save image
+	private void saveImage( javax.media.jai.PlanarImage img, String filename, String format) {
+		java.awt.image.renderable.ParameterBlock pb = new java.awt.image.renderable.ParameterBlock();
+		pb.addSource(img);
+		pb.add(filename);
+		pb.add(format);
+		javax.media.jai.JAI.create("filestore", pb);
+	}
+	
+	return this;
+}
+
+// start batch filter process in background and clean up variables
+splitSelectedImages = splitSelectedImages();
+new Thread( splitSelectedImages ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();
+

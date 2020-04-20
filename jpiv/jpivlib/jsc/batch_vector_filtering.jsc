@@ -1,0 +1,162 @@
+/**
+* Copyright 2008 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*/
+
+batchFilter() {
+
+	// global variables
+	jpiv2.ScriptDlg myDlg;
+	int normMedTst, 
+		invIsolated, 
+		replByMed, 
+		rmInvalid, 
+		medFilt, 
+		medFiltAll,
+		smooth,
+		smoothAll;
+	double normMedianTestNoiseLevel, 
+		normMedianTestThreshold; 
+	int invalidateIsolatedVectorsNumOfNeighbours;
+		
+	// initialize graphical user dialog
+	private void initDlg() {
+		myDlg = new jpiv2.ScriptDlg(jpiv,
+			"Batch Filtering",
+			"mail@vennemann-online.de");
+		myDlg.setDate("June 2006");
+		myDlg.setOs("independent");
+		myDlg.setDependencies("none");
+		myDlg.setComment(
+			"Applies a stack of filters to the selected vector files. " +
+			"Set the integer value behind each filter to '0' to skip the filter. " +
+			"A value of  '1' will apply the filter once, 'n' will apply " +
+			"the filter n-times. Edit the filter parameters in the settings-" +
+			"window, if applicable.");
+		myDlg.addVariable("normMedTst", "1", "normalized median test");
+		myDlg.addVariable("invIsolated","0", "invalidate isolated vectors");
+		myDlg.addVariable("replByMed", "1", "replace invalid vectors by median");
+		myDlg.addVariable("rmInvalid", "0", "set invalid vectors to zero");
+		myDlg.addVariable("medFilt", "0", "median filter (exclude invalid neighbours)");
+		myDlg.addVariable("medFiltAll", "0", "median filter (use all neighbours)");
+		myDlg.addVariable("smooth", "0", "3x3 smoothing (exclude invalid neighbours)");
+		myDlg.addVariable("smoothAll", "0", "3x3 smoothing (use all neighbours)");
+	}
+	
+	// initialize variables
+	private void initVariables() {
+		normMedTst = myDlg.getAsInt("normMedTst");
+		invIsolated = myDlg.getAsInt("invIsolated");
+		replByMed = myDlg.getAsInt("replByMed");
+		rmInvalid = myDlg.getAsInt("rmInvalid");
+		medFilt = myDlg.getAsInt("medFilt");
+		medFiltAll = myDlg.getAsInt("medFiltAll");
+		smooth = myDlg.getAsInt("smooth");
+		smoothAll = myDlg.getAsInt("smoothAll");
+		jpiv2.Settings settings = jpiv.getSettings();
+		normMedianTestNoiseLevel = settings.normMedianTestNoiseLevel; 
+		normMedianTestThreshold = settings.normMedianTestThreshold; 
+		invalidateIsolatedVectorsNumOfNeighbours = settings.invalidateIsolatedVectorsNumOfNeighbours;
+	}
+	
+	// filtering
+	// pivData: the PivData object to filter
+	// return: the PivData object after filtering it
+	private jpiv2.PivData filter(jpiv2.PivData pivData) {
+		int l;
+		for (l=0; l<normMedTst; l++) {
+			pivData.normalizedMedianTest(
+				normMedianTestNoiseLevel, 
+				normMedianTestThreshold);
+		}
+		for (l=0; l<invIsolated; l++) {
+			pivData.invalidateIsolatedVectors(
+				invalidateIsolatedVectorsNumOfNeighbours);
+		}
+		for (l=0; l<replByMed; l++) {
+			pivData.replaceByMedian(false, false);
+		}
+		for (l=0; l<rmInvalid; l++) {
+			pivData.removeInvalidVectors();
+		}
+		for (l=0; l<medFilt; l++) {
+			pivData.replaceByMedian(true, false);
+		}
+		for (l=0; l<medFiltAll; l++) {
+			pivData.replaceByMedian(true, true);
+		}
+		for (l=0; l<smooth; l++) {
+			pivData.smooth(false);
+		}
+		for (l=0; l<smoothAll; l++) {
+			pivData.smooth(true);
+		}
+		return(pivData);
+	}
+	
+	// show a file chooser dialog for the output filename
+	// return: a filename
+	private String showFileChooser() {
+		jpiv2.FlexFileChooser myFileChooser = jpiv.getFlexFileChooser();
+		myFileChooser.setFiletype(myFileChooser.ALL, false);
+		int approve = myFileChooser.showSaveDialog(jpiv);
+		if (approve == javax.swing.JFileChooser.APPROVE_OPTION) {
+			String pathname = myFileChooser.getSelectedFile().toString();
+			// remove any extension
+			int index = pathname.indexOf('.');
+			if(index != -1) pathname = pathname.substring(0, index);
+			return(pathname);
+		} else {
+			System.out.println("No destination file specified.");
+			return(null);
+		}
+	}
+	
+	// main function
+	private void run() {
+		initDlg();
+		int proceed = myDlg.display();
+		if (proceed == myDlg.EXECUTE_OPTION) {
+			initVariables();
+			String destPath = showFileChooser();
+			if (destPath != null) {
+				String[] files = jpiv.getListFrame().getSelectedElements();
+				if ( files == null) {
+					System.out.println("Select at least one vector file.");
+				} else {
+					java.text.DecimalFormat df = 
+					jpiv2.FileHandling.getCounterFormat(files.length);
+					for(int f=0; f<files.length; f++) {
+						filter(new jpiv2.PivData(files[f])).writeDataToFile(destPath + df.format(f) + ".jvc", true);
+						jpiv.getListFrame().appendElement(destPath + df.format(f) + ".jvc");
+					}
+				}
+			}
+		}
+		else {
+			System.out.println("cancelled.");
+		}
+	}
+	
+	return this;
+}
+
+// start batch filter process in background and clean up variables
+batchFilter = batchFilter();
+new Thread( batchFilter ).start();
+jpiv.getCmdInterpreter().clearBshNamespace();
+
