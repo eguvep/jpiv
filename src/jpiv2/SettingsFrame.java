@@ -2545,7 +2545,7 @@ public class SettingsFrame extends javax.swing.JInternalFrame {
 			} catch (java.io.IOException e1) {
 				try {
 					jEditorPaneBrowser.setPage(new URL(
-							"http://www.jpiv.vennemann-online.de/index.html"));
+							"https://eguvep.github.io/jpiv/index.html"));
 				} catch (java.io.IOException e2) {
 					jEditorPaneBrowser.setText("Can not find URL: \n" + docUrl);
 				}

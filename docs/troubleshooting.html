@@ -29,11 +29,24 @@
 			<br>
 		</div>
 		<div id="cont">
-			<p>
-			Please, <a class="cont" href="https://github.com/eguvep/jpiv/issues/">file an issue at Github</a>.
-			</p>
-			<br>
-			<br>
+		  <h2>Troubleshooting</h2>
+		  <p>
+		    If the problem is not listed here, please <a class="cont" href="https://github.com/eguvep/jpiv/issues/">file an issue at Github</a>.
+		  </p>
+		  <p>
+		    <b>JPIV stops and throws an out of memory error.</b><br>
+		    Allow java to use more memory. State <code>java -jar -Xmx4G JPIV.jar</code> to allow 4 Gigabytes, for example.
+		  </p>
+		  <p>
+		    <b>The Skripts drop down menu does not contain any entries.</b><br>
+		    Find the jpivlib directory (included in the <a class="cont"	href="https://github.com/eguvep/jpiv/raw/master/jpiv.zip">zip file</a>) and set the path accordingly, as described in the <a class="cont" href="settings_preferences_paths.html">reference</a>.
+		  </p>
+		  <p>
+		    <b>The vector plots show steps and patches where I expect as smooth vector field.</b><br>
+		    Check, whether the images show a strong background. This could be a light reflecting structure. Also images with natural seeding (for example using erythrocytes in blood flow) show this effect. Remove the background by a rolling ball algorithm or as described <a class="cont" href="https://eguvep.github.io/jpiv/howto.html#preProcessing">in the HOWTO section</a>. <a class="cont" href="https://imagej.net/">ImageJ</a> is an excellent tool for preprocessing.
+		  </p>
+		  <br>
+		  <br>
 		</div>
 	</body>
 </html>
