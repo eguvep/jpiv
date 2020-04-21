@@ -2,7 +2,11 @@
 
 ## What is this?
 
-JPIV is a complete and open source software package for 2D [Particle Image Velocimetry (PIV)](https://en.wikipedia.org/wiki/Particle_image_velocimetry) – an image based fluid flow measurement technology.
+JPIV is a complete and open source software package for 2D [Particle Image Velocimetry (PIV)](https://en.wikipedia.org/wiki/Particle_image_velocimetry) – an image based fluid flow measurement technology. JPIV is [https://scholar.google.com/scholar?&q=jpiv+software](widely used in research for detecting pattern movement and solid matter deformation).
+
+## Homepage
+
+https://eguvep.github.io/jpiv/index.html
 
 ## Features
 
