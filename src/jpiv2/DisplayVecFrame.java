@@ -347,7 +347,9 @@ public class DisplayVecFrame extends javax.swing.JFrame {
 		java.text.DecimalFormat df = new java.text.DecimalFormat(
 				"+0.0000E00;-0.0000E00");
 		System.out.println("\nGlobal statistics of " + vecImg.getFilename());
-		System.out.println("\tmean\tmedian\tmin\tmax\tstdev");
+                System.out.println("Columns: " + pivData.getDimension()[0] );
+                System.out.println("   Rows: " + pivData.getDimension()[1] );
+		System.out.println("\tmean\t\tmedian\t\tmin\t\tmax\t\tstdev");
 		System.out.println("ux\t" + df.format(uxmean) + "\t"
 				+ df.format(uxmedian) + "\t" + df.format(uxmin) + "\t"
 				+ df.format(uxmax) + "\t" + df.format(uxstdev) + "\t");

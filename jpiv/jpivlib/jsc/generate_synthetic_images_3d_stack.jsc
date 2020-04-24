@@ -582,9 +582,11 @@
 			File imgA = new File( imgNameA );
 			File imgB = new File( imgNameB );
 			// calling the sig program
-			String[] cmd = {jlibDirName + fileSeparator + "linux" + fileSeparator + "sig -f " + configFileName + " " + fileNameA + " " + imgNameA};
+			String[] cmd = {jlibDirName + fileSeparator + "linux64" + fileSeparator + "sig -f " + configFileName + " " + fileNameA + " " + imgNameA};
+			System.out.println("Executing: " + cmd[0]);
 			ci.execute(cmd, ci.TYPE_SHELLCOMMAND);
-			cmd[0] = jlibDirName + fileSeparator + "linux" + fileSeparator + "sig -f " + configFileName + " " + fileNameB + " " + imgNameB;
+			cmd[0] = jlibDirName + fileSeparator + "linux64" + fileSeparator + "sig -f " + configFileName + " " + fileNameB + " " + imgNameB;
+			System.out.println("Executing: " + cmd[0]);
 			ci.execute(cmd, ci.TYPE_SHELLCOMMAND);
 			// next scan plane
 			lsheet_rpos_z.set( initial_lsheet_rpos_z + (f+1)*dsp );

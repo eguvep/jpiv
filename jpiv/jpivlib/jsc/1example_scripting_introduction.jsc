@@ -1,6 +1,6 @@
 /** Simple Example
 *
-* Copyright 2008 Peter Vennemann
+* Copyright 2020 Peter Vennemann
 * 
 * This file is part of JPIV.
 *
@@ -48,7 +48,7 @@ public initDlg() {
 	myDlg = new jpiv2.ScriptDlg(
 		jpiv,
 		"Simple Example",
-		"mail@vennemann-online.de");	
+		"vennemann@fh-muenster.de");	
 	// Use the set...() methods of the jpiv2.ScriptDlg class to add some information that 
 	// will be displayed in the dialog. (Use '+' to concatenate strings.)
 	myDlg.setDate("February 2005");
@@ -56,11 +56,12 @@ public initDlg() {
 	myDlg.setDependencies("none");
 	myDlg.setComment(
 		"Read the commented code of this script to get an introduction to the " +
-		"scripting capabilities of jpiv. Press 'execute' to print the location " + 
-		"of the directory that contains this file in the 'Cmd' window below'.<br> " +
+		"scripting capabilities of jpiv. Press 'execute' to print the string " + 
+		"given as a variable. <br>" +
 		"Have a look at the other scripts in this directory to see more advanced examples.");
 	// Add your specific variable names, default values and descriptions.
 	// The values of this variables can later be manipulated in the dialog.
+	myDlg.addVariable("text", "Hello World!", "This text is printed in the command frame.");
 	myDlg.addVariable("loop", "5", "Number of times to loop through this script.");
 }
 
@@ -78,17 +79,9 @@ public void simpleExample() {
 		// Use the get...() methods of your jpiv2.ScriptDlg to get the actual 
 		// variable values.
 		int loop = myDlg.getAsInt("loop");
-		// Assemble the path to the jpiv script library.
-		// The class jpiv2.FileHandling provides some static methods
-		// to get the directory name of the jpiv library and the
-		// operating system dependent fileSeparator ('/' or '\').
-		String fileSep = jpiv2.FileHandling.getFileSeparator();
-		String jpivLib = 
-			jpiv2.FileHandling.getJarDir() + fileSep + 
-			"jlib" + fileSep + 
-			"jsc" + fileSep;
+		String text = myDlg.getAsString("text");
 		for(int i = 0; i < loop; i++) {
-			System.out.println(i + " - " + "You find this script in: " + jpivLib);
+			System.out.println(i + " - " + text);
 		}
 	// The user pressed 'quit'.
 	} else {

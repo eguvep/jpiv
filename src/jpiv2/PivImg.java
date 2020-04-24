@@ -50,6 +50,9 @@ import javax.media.jai.RenderedOp;
 import javax.media.jai.TiledImage;
 import javax.media.jai.WarpAffine;
 
+
+
+
 /**
  * A double frame pixel image representation. This class provides methods for
  * reading, writing and processing double frame pixel images. The pixel data is

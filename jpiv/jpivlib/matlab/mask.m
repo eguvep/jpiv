@@ -65,4 +65,4 @@ um=reshape(Umask,size(x,1),1);
 vm=reshape(Vmask,size(x,1),1);
 sm=reshape(Smask,size(x,1),1);
 dataOut=[x y um vm sm];
-save(outputFile, 'dataOut', '-ASCII');
+save(outputFile, 'dataOut');

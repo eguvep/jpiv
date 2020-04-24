@@ -271,8 +271,10 @@ public final class FileHandling {
 		do {
 			line = br.readLine();
 			headerLines += 1;
-		} while (line.contains("TITLE") || line.contains("VARIABLES")
-				|| line.contains("ZONE"));
+		} while (line.contains("TITLE") || 
+                         line.contains("VARIABLES") || 
+                         line.contains("ZONE") || 
+                         line.startsWith("#"));
 		br.close();
 		br = new BufferedReader(new FileReader(pathname));
 		// skip the header
@@ -300,10 +302,13 @@ public final class FileHandling {
 			case StreamTokenizer.TT_EOL:
 				// at the end of the line, the data is appended at the ArrayList
 				// use clone() to copy the object and not just its reference
-				al.add(data.clone());
-				numOfRows++;
-				numOfCol = j;
+                                if (data[0] != 0) {// not an empty line
+                                    al.add(data.clone());
+				    numOfRows++;
+				    numOfCol = j;
+                                }
 				j = 0;
+                                data[0] = 0;
 				break;
 			default:
 				break;
@@ -510,7 +515,7 @@ public final class FileHandling {
 			idx0 = idx0 + 1;
 		int idx1 = classPath.lastIndexOf(sep);
 		if (idx1 == -1)
-			idx1 = classPath.length() - 1;
+			idx1 = classPath.length();
 		String jarDir = classPath.substring(idx0, idx1);
 		return (jarDir);
 	}

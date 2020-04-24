@@ -31,11 +31,13 @@ import java.util.Locale;
  * x-coordinate and the second the y-coordinate of a data point. The third and
  * fourth columns contain the x- and the y-velocity components. Other columns
  * might contain some additional information. The columns are separated by
- * whitespaces. The data type is UTF-8. The file might contain a header <br>
+ * whitespaces. The data type is UTF-8. The file might contain a comments
+ * or a header <br>
  * e.g:<br>
  * <code>TITLE = "Example"<br>
  * VARIABLES = "x", "y", "ux", "uy", "s"<br>
  * ZONE I=3, J=3, F=POINT<br>
+ * # comment<br>
  * 16 16 +0.4 +0.1 0.94<br>
  * 32 16 +0.9 +0.0 0.92<br>
  * 48 16 +1.2 -0.1 0.93<br>
@@ -95,7 +97,7 @@ public class PivData {
 		try {
 			if ((FileHandling.getFileExtension(pathname)).equals("nc")) {
 			//	this.pivData = FileHandling.readNetCdfFile(pathname);
-				System.err.println("NetCDF support currently disabled.");
+				System.err.println("NetCDF not yet supported.");
 			} else {
 				this.pivData = FileHandling.readArrayFromFile(pathname);
 				if (pivData[0].length < 5)

@@ -1,4 +1,4 @@
-function resampleVecorField( inputFile, outputFile, phi, x0, y0, dx, dy, nx, ny )
+function resampleVectorField( inputFile, outputFile, phi, x0, y0, dx, dy, nx, ny )
 % resampleVecorField( inputFile, outputFile, phi, x0, y0, dx, dy, nx, ny )
 % Rotates a vector field by 'angle' and interpolates ('cubic') the result on a regular grid.
 % The vector field should contain five columns (x, y, u, v, s).
@@ -48,4 +48,4 @@ v = reshape(V',nx*ny,1);
 s = reshape(S,nx*ny,1);
 % write output file
 dataOut = [x, y, u, v, s];
-save(outputFile, 'dataOut', '-ASCII');
+save(outputFile, 'dataOut');
