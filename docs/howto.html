@@ -33,13 +33,17 @@
 			
 			<a class="cont" href="#singlePixelEnsembleCorrelation">...use single pixel ensemble correlation</a><br>
 			<a class="cont" href="#preProcessing">...do image preprocessing</a><br>
+			<a class="cont" href="#joinSplitImages">...convert single or double frame images</a><br>
+			<a class="cont" href="#masking">...apply a mask to the vector field<a><br>
 			<a class="cont" href="#processDirs">...process directories</a><br>
 			<a class="cont" href="#postProcessing">...do vector post processing</a><br>
+			<a class="cont" href="#rotate">...rotate a vector field</a><br>
 			<a class="cont" href="#estimateFlowRates">...estimate flow rates</a><br>
 			<a class="cont" href="#3dRecon">...reconstruct a 3d flow</a><br>
 			<a class="cont" href="#exportVectorFields">...export vector fields into a graphics format</a><br>
 			<a class="cont" href="#plotCorrelationFunction">...plot a cross-correlation function</a><br>
 			<a class="cont" href="#saveCorrelationFunction">...save a cross-correlation function</a><br>
+			<a class="cont" href="#generateSyntheticImages">...generate synthetic images</a><br>
 			<a class="cont" href="#pivWare">...use JPIV as a front-end for PIVware</a><br>
 			
 			<h3><a name="singlePixelEnsembleCorrelation">Single pixel ensemble correlation</a></h3>
@@ -54,18 +58,19 @@
 			
 			<h3><a name="processDirs">Process directories</a></h3>
 			<p>
-			First, dowload and install the library files, as explained on the <a class="cont" href="download.html">download</a> page. Then, use <b>Script - process_directories</b>.
+			  Use <b>Script - process_directories</b>. If the script is not linked in the Script drop down menu, check <a class="cont" href="settings_preferences_paths.html">if the path is correcty set</a>.
 			</p>
 			<p><a class="cont" href="#top">top</a></p>
+
 			<h3><a name="preProcessing">Image preprocessing</a></h3>
 			<p>
-			Image preprocessing tools are not integrated in JPIV. I recommend to use <a class="cont" href="https://imagej.net">ImageJ</a>.
+			  In most cases, image preprocessing means to substract the background. Use <b>Script - remove_sliding_background</b>. If the script is not linked in the Scipt drop down menu, check <a class="cont" href="settings_preferences_paths.html">if the path is correcty set</a>. You need at least three images to generate a valid background image.
 			</p>
 			<p>
-			Example:
+			  For other operations, for example rolling ball background substraction, I recommend to use <a class="cont" href="https://imagej.net">ImageJ</a>.
 			</p>
 			<p>
-			A common imge preprocessing task is to remove some static background prior to the PIV evaluation (see the images below).
+			ImageJ example:
 			</p>
 			<p>
 			1. Open a couple of images.<br>
@@ -84,7 +89,19 @@
 			<i>The same image as above, after preprocessing.</i>
                         </p>
 			<p><a class="cont" href="#top">top</a></p>
-			
+
+			<h3><a name="joinSplitImages">Convert single or double frame images</a></h3>
+			    <p>
+			      Use <b>Script - split_selected_images</b> or <b>Script - join_selected_images</b> to convert double frame images into single frame images or vice versa. If the script is not linked in the Scipt drop down menu, check <a class="cont" href="settings_preferences_paths.html">if the path is correcty set</a>.
+			    </p>
+			    <p><a class="cont" href="#top">top</a></p>
+			    
+			<h3><a name="masking">Applying a mask</a></h3>
+			    <p>
+			      Use <b>Script - apply_mask</b>. If the script is not linked in the Scipt drop down menu, check <a class="cont" href="settings_preferences_paths.html">if the path is correcty set</a>. Either Matlab or Octave should be available in the path of your environment.
+			    </p>
+			    <p><a class="cont" href="#top">top</a></p>
+			    
 			<h3><a name="postProcessing">Vector postprocessing</a></h3>
 			<p>
 			The drop-down menu <b>Vector</b> contains a collection of vector postprocessing and vector analysis tools. The corresponding parameters can be altered in the &quot;Settings&quot; window on the <b>Vector Processing</b> panels. A very robust outlier detection is the normalized median test. It can successfully be applied to almost every PIV evaluation. See the <a class="cont" href="settings_vectorprocessing_normalizedmediantest.html">documentation</a> for a detailed description. The detected ouliers can be visualized by selecting the checkbox <b>Label invalid vectors</b> on the panel <b>JPIV - Preferences - Vector Plot</b>, and redisplaying the vector file. Vectors marked invalid can be replaced by executing <b>Vector - replace invalid vectors by median</b>. See the images below for an example. Here, also the script <b>Script - wall_filter</b> was applied to remove the random correlations outside the vector field. Also check the script <b>Script - batch_vector_filtering</b> for applying a set of repetitive filters at one go.
@@ -98,6 +115,12 @@
 			<i>The same image as above, after postprocessing. Replaced vectors are marked pink.</i>
                         </p>
 			<p><a class="cont" href="#top">top</a></p>
+
+			<h3><a name="rotate">Rotate and resample a vector field</a></h3>
+			    <p>
+			      Use <b>Script - 2example_resample_vector_field</b> to rotate a vector field. In this way, you may align one dimensional flows with the image border. If the script is not linked in the Scipt drop down menu, check <a class="cont" href="settings_preferences_paths.html">if the path is correcty set</a>. The script serves as an example for integrating Matlab/Octave scripts into the JPIV workflow. Either Matlab or Octave must therfore be present in the path of your environment.
+			    </p>
+			    <p><a class="cont" href="#top">top</a></p>
 			
 			<h3><a name="estimateFlowRates">Estimation of flow rates</a></h3>
 			<p>
@@ -123,6 +146,9 @@
 			<p>
 			Display the context menu of a vector field plot (right mouse button). Select <b>export as pixel image</b> for pgm, tiff, and png or <b>export as vector graphics</b> for swf, emf, svg, eps, and pdf.
 			</p>
+			<p>
+			  You can also use <b>Script - batch_export_vector_plots</b>. The script allows to generate a flow profile at the same position to show pulsating flows, for example. Also the background image can be adjusted.
+			</p>
 			<p><a class="cont" href="#top">top</a></p>
 			
 			<h3><a name="plotCorrelationFunction">Plot a cross-correlation function</a></h3>
@@ -147,10 +173,16 @@
 			<i>ImageJ plots of exported correlation functions belonging to the second vector in the second row (number 31). The 64&times;64 pixel correlation function belongs to the first pass. The smaller function belongs to the second pass. The correlation peak of the second pass is almost in the centre of the correlation function, because of pre-shifting the correlation windows according to the first pass. In this way, the second correlation peak is also higher than the one of the first pass, although a smaller window was chosen.</i>
                         </p>
 			<p><a class="cont" href="#top">top</a></p>
-			
+
+			<h3><a name="generateSyntheticImages">Generate synthetic images</a></h3>
+			    <p>
+			      Use <b>Script - generate_synthetic_images_2d</b> or <b>Script - generate_synthetic_images_3d_stack</b>. If the scripts are not linked in the Scipt drop down menu, check <a class="cont" href="settings_preferences_paths.html">if the path is correcty set</a>. You should be on Linux, because JPIV uses the Europiv II Synthetic Image Generator, that is only compiled for Linux at the moment.
+			    </p>
+			    <p><a class="cont" href="#top">top</a></p>
+			    
 			<h3><a name="pivWare">Use JPIV as a front-end for PIVware.<a></h3>
 			<p>
-			At the <a class="cont" href="http://www.ahd.tudelft.nl/">AHD Laboratory</a> of the TU Delft, you can use JPIV as a front-end for the command line PIV analysis package PIVware, by Jerry Westerweel. PivWare is integrated into JPIV via two scrips. They are stored in the directory <code>/usr/local/pivware/jpiv/jlib/jsc/</code>. Define the <code>jlib</code> directory as your jpiv library directory, <a class="cont" href="settings_preferences_paths.html">as described in the documentation section</a>. The two scripts <code>pivware_piv_evaluation.jsc</code> and <code>pivware_tools_collection.jsc</code> should be directly accessible via the <b>Script</b> menu in the menu bar. Execute them, to see a description.
+			At the <a class="cont" href="https://nl.wikipedia.org/wiki/Laboratorium_voor_Aero-_%26_Hydrodynamica">Laboratory for Aero- and Hydrodynamics</a> of the TU Delft, you can use JPIV as a front-end for the command line PIV analysis package PIVware, by Jerry Westerweel. The two scripts <code>pivware_piv_evaluation.jsc</code> and <code>pivware_tools_collection.jsc</code> should be directly accessible via the <b>Script</b> menu in the menu bar. Execute them, to see a description.
 			</p>
 			<p>
 			Example:
