@@ -15,10 +15,13 @@ https://eguvep.github.io/jpiv/index.html
 - highly accurate and fast because of multi-pass, multi-grid, FFT based correlation algorithmm
 - ensemble correlation (correlation averaging) implemented
 - complete ready for Micro-PIV and high resolution boundary flow measurements: rectangular evaluation areas possible, single pixel resolution ensemble evaluation implemented
+- image preprocessing
 - outlier detection
+- masking
 - calculation of various statistical information as well as some derivatives like vorticity
 - 3d velocity field reconstruction from 2d planes in incompressible flows
 - publication ready vector plots and export in various vector graphics and pixel formats
+- batch processing
 - arbitrary velocity profile extraction
 - region of interest
 - synthetic image generation
