@@ -64,7 +64,7 @@
 
 			<h3><a name="preProcessing">Image preprocessing</a></h3>
 			<p>
-			  In most cases, image preprocessing means to substract the background. Use <b>Script - remove_sliding_background</b>. If the script is not linked in the Scipt drop down menu, check <a class="cont" href="settings_preferences_paths.html">if the path is correcty set</a>. You need at least three images to generate a valid background image.
+			  In most cases, image preprocessing means to substract the background. Use <b>Image - substract background</b> to remove a sliding background. Sliding means, that the background image is created by taking the minimum grey value of three images (one before the current image, the current image, and one after the current image).
 			</p>
 			<p>
 			  For other operations, for example rolling ball background substraction, I recommend to use <a class="cont" href="https://imagej.net">ImageJ</a>.
@@ -92,7 +92,7 @@
 
 			<h3><a name="joinSplitImages">Convert single or double frame images</a></h3>
 			    <p>
-			      Use <b>Script - split_selected_images</b> or <b>Script - join_selected_images</b> to convert double frame images into single frame images or vice versa. If the script is not linked in the Scipt drop down menu, check <a class="cont" href="settings_preferences_paths.html">if the path is correcty set</a>.
+			      Use <b>Image - double to single frame (split)</b> or <b>Image - single to double frame (join)</b> to convert double frame images into single frame images or vice versa.
 			    </p>
 			    <p><a class="cont" href="#top">top</a></p>
 			    
