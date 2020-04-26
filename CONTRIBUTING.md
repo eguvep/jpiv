@@ -12,7 +12,9 @@ Extending JPIV via Beanshell Scripts is very flexible and straightforward. Check
 
 https://eguvep.github.io/jpiv/scripting.html
 
-Just send me your scripts and I'll copy them into the library.
+Just send me your scripts and I'll copy them into the library. 
+
+Beanshell scripts are especially suitable for prototyping JPIV classes. Because Beanshell uses pure Java syntax, the script content can usually be moved into the JPIV source code, easily.
 
 ## Scripts in other languages
 
