@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.10.5
-Created-By: 11.0.7+10-post-Ubuntu-2ubuntu218.04 (Ubuntu)
-Codebase: *
-Application-Library-Allowable-Codebase: *
-Caller-Allowable-Codebase: *
-Permissions: all-permissions
-Application-Name: JPIV
-
