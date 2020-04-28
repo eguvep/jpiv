@@ -38,6 +38,7 @@ Prerequisite: A Java Runtime Environment (JRE).
 
 ## Using JPIV
 
+- [Quick Start Video on Vimeo](https://vimeo.com/412768212)
 - [Introduction for PIV Novices](https://eguvep.github.io/jpiv/introduction.html)
 - [Quick Start Guide for JPIV Beginners](https://eguvep.github.io/jpiv/fiststeps.html)
 - [HOWTO for Expert Users](https://eguvep.github.io/jpiv/howto.html)
