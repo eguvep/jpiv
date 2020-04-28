@@ -146,27 +146,27 @@ public class CmdInterpreter {
 		os = os.toLowerCase();
 		String[] cmd = new String[command.length + 2];
 		if (os.indexOf("windows") != -1) {
-			if (os.indexOf("95") != -1)
+			if (os.contains("95"))
 				cmd[0] = "command.com";
-			else if (os.indexOf("98") != -1)
+			else if (os.contains("98"))
 				cmd[0] = "command.com";
-			else if (os.indexOf("nt") != -1)
-				cmd[0] = "cmd.exe";
-			else if (os.indexOf("2000") != -1)
-				cmd[0] = "cmd.exe";
-			else if (os.indexOf("xp") != -1)
+			else
 				cmd[0] = "cmd.exe";
 			cmd[1] = "/c";
-		} else if (os.indexOf("unix") != -1) {
+		} else if (os.contains("unix")) {
 			cmd[0] = "bash";
 			cmd[1] = "-c";
-		} else if (os.indexOf("linux") != -1) {
+		} else if (os.contains("linux")) {
+			cmd[0] = "bash";
+			cmd[1] = "-c";
+                } else if (os.contains("mac")) {
 			cmd[0] = "bash";
 			cmd[1] = "-c";
 		} else {
 			cmd[0] = "unsupported os";
 			System.err.println("The execution of shell commands is not yet "
-					+ "supported on the current platform: " + os);
+					 + "supported on the current platform: " + os
+                                         + ". Please report this on https://github.com/eguvep/jpiv/issues/");
 		}
 		if (!cmd[0].equals("unsupported os")) {
 			for (int i = 0; i < command.length; ++i) {

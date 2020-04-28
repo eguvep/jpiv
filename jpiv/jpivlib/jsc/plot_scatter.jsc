@@ -1,0 +1,58 @@
+/** Plot Scatter using Python.
+*
+* Copyright 2020 Peter Vennemann
+* 
+* This file is part of JPIV.
+*
+* JPIV is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* JPIV is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with JPIV.  If not, see <http://www.gnu.org/licenses/>. 
+*
+* This script calls a Python function for plotting a scatter diagramm.
+*/
+
+
+PythonPlot() {
+
+    String sourcePath = jpiv.getListFrame().getSelectedElement();
+    if(sourcePath == null) {
+	System.out.println("Please select a vector file first.");
+	return(null);
+    }
+
+    private void run() {
+	// Path to Python scripts:
+	String fileSep = jpiv2.FileHandling.getFileSeparator();
+	String myPyDir = jpiv.getSettings().jpivLibPath +
+                         fileSep + "python" + fileSep;
+
+	// Create command:
+	String[] cmd = {""};
+	cmd[0] = "python3 " + myPyDir + "vec_plot.py " +
+           "--fname " + "'" + sourcePath + "' " +
+           "--plot_type scatter";
+
+	// Reference to the running command interpreter:
+	jpiv2.CmdInterpreter ci = jpiv.getCmdInterpreter();
+    
+	// Execute command:
+	System.out.println(cmd[0]);
+	ci.execute(cmd, ci.TYPE_SHELLCOMMAND);
+    }
+    return(this);
+}
+
+// plot in background
+pythonPlot = PythonPlot();
+new Thread(pythonPlot).start();
+// clean up
+jpiv.getCmdInterpreter().clearBshNamespace();
