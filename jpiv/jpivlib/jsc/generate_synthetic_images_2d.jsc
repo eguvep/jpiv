@@ -28,7 +28,7 @@
 	// number of particles
 	int np = 5000;
 	// number of particle volumes (images)
-	int nv = 1;
+	int nv = 10;
 	// mean displacement (unit: real)
 	double dp = 0.005;
 	// configuration file
@@ -428,9 +428,8 @@
 						x = Math.random() * vx - vx/2;
 						y = Math.random() * vy - vy/2;
 						z = Math.random() * vz - vz/2;
-						// edit the following lines to customize the displacement pattern
-						// dy = -dp/((0.2857142*vy)*(0.2857142*vy))*x*x+dp;
-						dy = -dp/((0.2857142*vy)*(0.2857142*vy))*x*x*36+dp;
+						// edit the following line to customize the displacement pattern
+						dy = -dp/((0.2857142*vy)*(0.2857142*vy))*x*x+dp;
 						if(dy<0) dy=0;
 						bwA.write(
 							dfnum.format(x*Math.cos(theta)+y*Math.sin(theta)) + "\t" +

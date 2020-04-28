@@ -34,16 +34,13 @@ PythonPlot() {
 	String fileSep = jpiv2.FileHandling.getFileSeparator();
 	String myPyDir = jpiv.getSettings().jpivLibPath +
                          fileSep + "python" + fileSep;
-
 	// Create command:
-	String[] cmd = {""};
-	cmd[0] = "python3 " + myPyDir + "vec_plot.py " +
-           "--fname " + "'" + sourcePath + "' " +
-           "--plot_type scatter";
-
+	String[] cmd = {
+	    "python3 " + myPyDir + "vec_plot.py" +
+	    " --fname " + "'" + sourcePath + "'" +
+	    " --plot_type scatter"};
 	// Reference to the running command interpreter:
 	jpiv2.CmdInterpreter ci = jpiv.getCmdInterpreter();
-    
 	// Execute command:
 	System.out.println(cmd[0]);
 	ci.execute(cmd, ci.TYPE_SHELLCOMMAND);
