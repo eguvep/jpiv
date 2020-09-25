@@ -49,3 +49,7 @@ Prerequisite: A Java Runtime Environment (JRE).
 
 - [User Script Coding Intro](https://eguvep.github.io/jpiv/scripting.html)
 - [JPIV Code Documentation](https://eguvep.github.io/jpiv/javadoc/)
+
+## Related Projects
+
+Also check out the [OpenPivGui project](https://openpiv-tk-gui.readthedocs.io/en/latest/index.html).
