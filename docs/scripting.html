@@ -184,10 +184,15 @@ Open the script files in a text editor and read the comments between the code li
 			</p>
 			<h3><a name="CmdLineOptions">Command Line Options</h3>
 			<p>
-You might wish to integrate JPIV into your own program. This is easily possible by calling JPIV from within your code on the command line. JPIV understands only a single command line option: This is the name of a file, that will be interpreted as a BeanShell script. This script will be executed immediately after startup. From within this script, you can access all JPIV classes and methods, which is more powerful than any other command line option would be. Example for calling jpiv: <code>java -jar -Xmx4G jpiv.jar myScript.jsc</code>
+			  Examples:
 			</p>
 			<p>
-Some people prefer jpiv to accept a list of images on the command line. The images should be evaluated immediately. The executable <a class="cont" href="jpivc.jar">jpivc.jar</a> can do that. Launch a PIV evaluation via command line by executing <code>java -jar -Xmx4G jpivc.jar *.tiff</code>, for example. The files *.tiff are your PIV images.
+			  Immediately execute a BeanShell script file: <code>java -jar JPIV.jar -bsh mySkript.bsh</code>
+			</p>
+			<p>
+			  Immediately start evaluating the provided images: <code>java -jar JPIV.jar -img *.pgm</code>
+			<p>
+			  Execute <code>java -jar JPIV.jar -help</code>, for a complete list of options.
 			</p>
 			<br>
 		</div>

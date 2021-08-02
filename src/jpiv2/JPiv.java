@@ -1,7 +1,7 @@
 /*
  * JPiv.java
  *
- * Copyright 2020 Peter Vennemann
+ * Copyright 2021 Peter Vennemann
  * 
  * This file is part of JPIV.
  *
@@ -26,6 +26,15 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Properties;
 
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.OptionBuilder;
+
 import javax.swing.ImageIcon;
 
 /**
@@ -35,6 +44,12 @@ import javax.swing.ImageIcon;
  * particularly handy for use in scripts.
  */
 public class JPiv extends javax.swing.JFrame {
+	
+	private static JPiv jpiv;
+	private String message = "";
+	public static Boolean verbosity = false;
+	public static String version = "21.08";
+	public static String year = "2021";
     
     	/**
 	 * Entry point of the jpiv2 package
@@ -43,21 +58,48 @@ public class JPiv extends javax.swing.JFrame {
 	 *            There are no command line arguments specified.
 	 */
 	public static void main(String args[]) {
-		jpiv = new JPiv();
-		jpiv.setVisible(true);
-		if(args.length != 0){
-			if (args[0].contentEquals("v")) {
+		// create commandline options
+		Options options = new Options();
+		options.addOption("debug", false, "Increase verbosity and display debug information.");
+		options.addOption("bsh", true, "Execute the provided Beanshell script file.");
+		options.addOption("help", false, "Print command line options and exit.");
+		options.addOption("version", false, "Print version number and exit.");
+		options.addOption(Option.builder("img")
+				                .desc("Start immediately with PIV processing using the provided images.")
+				                .hasArgs()
+			                    .build());
+		CommandLineParser parser = new DefaultParser();
+		try {
+			CommandLine cmd = parser.parse(options, args);
+			if (cmd.hasOption("debug")) {
 				verbosity = true;
 			}
-			else {
-				cmdInterpreter.execute(args, CmdInterpreter.TYPE_BSHFILE);
+			if (cmd.hasOption("help")) {
+				HelpFormatter formatter = new HelpFormatter();
+				formatter.printHelp("JPiv", options);
+				System.exit(0);
 			}
+			if (cmd.hasOption("version")) {
+				System.out.println("Version " + version);
+				System.exit(0);
+			}
+			jpiv = new JPiv();
+			jpiv.setVisible(true);
+			if (cmd.hasOption("img")) {
+				String[] filenames = cmd.getOptionValues("img");
+				jpiv.getListFrame().appendElements(filenames);
+		        jpiv.getListFrame().selectElements(0, filenames.length-1);
+		        jpiv.getSettings().setPivUseDefaultDestFileName(true);
+		        new jpiv2.PivEvaluation(jpiv).start();
+			}
+			if (cmd.hasOption("bsh")) {
+				String[] bsh_script = {cmd.getOptionValue("bsh")};
+				cmdInterpreter.execute(bsh_script, CmdInterpreter.TYPE_BSHFILE);
+			}
+		} catch (ParseException e) {
+			System.err.println("Something is wrong with the command line argument: " + e);
 		}
 	}
-
-	private static JPiv jpiv;
-	private String message = "";
-	public static Boolean verbosity = false;
 
 	/** Constructor. */
 	public JPiv() {
@@ -136,7 +178,7 @@ public class JPiv extends javax.swing.JFrame {
         jMenuDokumentation = new javax.swing.JMenu();
         jMenuItemShowHtml = new javax.swing.JMenuItem();
 
-        setTitle("JPIV 13.08");
+        setTitle("JPIV " + version);
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/res/logo32.png")).getImage());
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -729,8 +771,8 @@ public class JPiv extends javax.swing.JFrame {
 	public void printStartupMessage() {
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		System.out.println(
-                                "JPIV 2020.04.26\n"
-				+ "Copyright (C) 2020 Peter Vennemann\n"
+                                "JPIV " + version + "\n"
+				+ "Copyright (C) " + year + " Peter Vennemann\n"
 				+ "JPIV is free software: you can redistribute it and/or modify "
 				+ "it under the terms of the GNU General Public License.\n"
 				+ "This program is distributed in the hope that it will be useful, "
